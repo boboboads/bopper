@@ -462,7 +462,7 @@ local function sendWebhook(name, mps, url, fields, color, all, owner)
     local formattedMps = shortMoney(mps)
     local image = brainRotImages[tostring(name)] or brainRotImages["default"]
 
-    local embedFields = {
+    local embedFields = fields or {
         { name = "🏷️ Name", value = "**" .. tostring(name or "Unknown") .. "**", inline = true },
         { name = "💰 Money per sec", value = "**" .. formattedMps .. "**", inline = true },
         { name = "**👥 Players:**", value = "**" .. tostring(math.max(#Players:GetPlayers() - 1, 0))
