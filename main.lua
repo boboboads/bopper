@@ -1,3 +1,5 @@
+print('bopper started')
+
 local BACKEND_URL = "https://serverfetcher.onrender.com/"
 
 local WEBHOOKS = {
