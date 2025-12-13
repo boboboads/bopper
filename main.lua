@@ -225,7 +225,7 @@ end
 -- /next: Fetching next server
 -- ==========================================================
 local function nextServer()
-    local data = postJSON("next", {})
+    local data = postJSON("next", { username = LocalPlayer.Name })
     if type(data) == "table" and data.ok and data.id then
         return tostring(data.id)
     end
