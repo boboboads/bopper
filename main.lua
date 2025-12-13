@@ -1,5 +1,4 @@
-print('bopper started')
-
+print('hopper started')
 local BACKEND_URL = "https://serverfetcher.onrender.com/"
 
 local WEBHOOKS = {
@@ -130,7 +129,7 @@ local HttpService     = game:GetService("HttpService")
 local TeleportService = game:GetService("TeleportService")
 local Players         = game:GetService("Players")
 local CoreGui         = game:GetService("CoreGui")
-local LocalPlayer     = Players.LocalPlayer
+local LocalPlayer     = Players.LocalPlayer or Players.PlayerAdded:Wait()
 
 -- ==========================================================
 -- Optimazations
@@ -248,7 +247,8 @@ local function jitter()
     task.wait(j)
 end
 
-local rebirths = Players.LocalPlayer:WaitForChild("leaderstats"):WaitForChild("Rebirths")
+local ls = LocalPlayer:WaitForChild("leaderstats")
+local rebirths = ls:WaitForChild("Rebirths")
 
 function tryTeleportTo(jobId)
     local now = os.clock()
@@ -623,9 +623,9 @@ task.spawn(function()
         character = lp.CharacterAdded:Wait()
     end
 
-    task.wait(1.0)
+    task.wait(0.5)
     pcall(function() brainrotGather() end)
-    task.wait(1.0)
+    task.wait(0.5)
     pcall(function() brainrotGather() end)
     task.spawn(function()
         while true do
@@ -633,7 +633,7 @@ task.spawn(function()
             task.wait(WEBHOOK_REFRESH)
         end
     end)
-    task.wait(1.0)
+    -- task.wait(1.0)
     oneShotHop()
 end)
 
