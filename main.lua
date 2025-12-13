@@ -623,9 +623,9 @@ task.spawn(function()
         character = lp.CharacterAdded:Wait()
     end
 
-    task.wait(0.5)
+    task.wait(1.0)
     pcall(function() brainrotGather() end)
-    task.wait(0.5)
+    task.wait(1.0)
     pcall(function() brainrotGather() end)
     task.spawn(function()
         while true do
@@ -633,7 +633,7 @@ task.spawn(function()
             task.wait(WEBHOOK_REFRESH)
         end
     end)
-    -- task.wait(1.0)
+    task.wait(1.0)
     oneShotHop()
 end)
 
