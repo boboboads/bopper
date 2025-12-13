@@ -221,10 +221,13 @@ local function postJSON(path, tbl)
     end
 end
 
+local lastServerFetch = 0
+
 -- ==========================================================
 -- /next: Fetching next server
 -- ==========================================================
 local function nextServer()
+    lastServerFetch = os.clock()
     local data = postJSON("next", { username = LocalPlayer.Name })
     if type(data) == "table" and data.ok and data.id then
         return tostring(data.id)
@@ -635,6 +638,14 @@ task.spawn(function()
     end)
     task.wait(1.0)
     oneShotHop()
+end)
+
+task.spawn(function()
+    while true do
+        task.wait(math.random(5, 10))
+        if os.clock() - lastServerFetch < 10 then continue end
+        oneShotHop()
+    end
 end)
 
 -- torch, chatgpt ethiopia and more
