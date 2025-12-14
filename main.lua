@@ -81,7 +81,13 @@ local brainRotImages = {
     ['Chillin Chili'] = "https://static.wikia.nocookie.net/stealabr/images/e/e0/Chilin.png/revision/latest?cb=20251006204612",
     ['Los Chicleteiras'] = "https://static.wikia.nocookie.net/stealabr/images/4/4d/Los_ditos.png/revision/latest?cb=20250928224101",
     ['Chipso and Queso'] = "https://static.wikia.nocookie.net/stealabr/images/f/f8/Chipsoqueso.png/revision/latest?cb=20251030022105",
-
+    ['Chimnino'] = "https://static.wikia.nocookie.net/stealabr/images/c/c5/Chimnino.png/revision/latest?cb=20251214124516",
+    ['Los 25'] = "https://static.wikia.nocookie.net/stealabr/images/9/9b/Transparent_Los_25.png/revision/latest?cb=20251214011435",
+    ['Los Candies'] = "https://static.wikia.nocookie.net/stealabr/images/f/f9/Candy%21.png/revision/latest?cb=20251210212953",
+    ['Reinito Sleighito'] = "https://static.wikia.nocookie.net/stealabr/images/7/7e/Deer_Sleigh.png/revision/latest?cb=20251210044852",
+    ['La Ginger Sekolah'] = "https://static.wikia.nocookie.net/stealabr/images/f/f4/La_ginger_Sekolah.webp/revision/latest?cb=20251128172314",
+    ['Las Sis'] = "https://static.wikia.nocookie.net/stealabr/images/e/e8/Las_Sis.png/revision/latest?cb=20250914042020",
+    ['La Casa Boo'] = "https://static.wikia.nocookie.net/stealabr/images/d/de/Casa_Booo.png/revision/latest?cb=20251024155352",
 }
 
 local PRIORITY_ANIMALS = {
