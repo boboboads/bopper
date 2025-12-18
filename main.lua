@@ -1,4 +1,5 @@
 print('hopper started')
+pcall(function() writefile('seliTimer.txt', DateTime.now().UnixTimestamp) end)
 local BACKEND_URL = "https://serverfetcher.onrender.com/"
 
 local WEBHOOKS = {
@@ -14,7 +15,7 @@ local WEBHOOKS = {
 local brainRotImages = {
     ['default'] = "https://practicaltyping.com/wp-content/uploads/2020/07/gardenwallgreg.jpg",
     ['Swag Soda'] = "https://static.wikia.nocookie.net/stealabr/images/9/9f/Swag_Soda.png/revision/latest?cb=20251116003702",
-    ['Mieteteira Bicicleteira'] = "https://static.wikia.nocookie.net/stealabr/images/6/6d/24_sin_t%C3%ADtulo_20251023155436.png/revision/latest?cb=20251125132431",
+    ['Mieteteira Bicicleteira'] = "https://static.wikia.nocookie.net/stealabr/images/8/86/Mieteteira_Bicicleteira.png/revision/latest?cb=20251125132431",
     ['La Secret Combinasion'] = "https://static.wikia.nocookie.net/stealabr/images/f/f2/Lasecretcombinasion.png/revision/latest?cb=20251006044448",
     ['67'] = "https://static.wikia.nocookie.net/stealabr/images/8/83/BOIIIIIII_SIX_SEVEN_%F0%9F%98%82%F0%9F%98%82%F0%9F%98%82%F0%9F%98%82%F0%9F%98%82%F0%9F%98%82%F0%9F%98%82%F0%9F%98%82%F0%9F%98%82%F0%9F%98%82.png/revision/latest?cb=20251129064658",
     ['Tang Tang Keletang'] = "https://static.wikia.nocookie.net/stealabr/images/8/8f/TangTang.png/revision/latest?cb=20251014024653",
@@ -32,7 +33,7 @@ local brainRotImages = {
     ['Los Mobilis'] = "https://static.wikia.nocookie.net/stealabr/images/2/27/Losmobil.png/revision/latest?cb=20251012023251",
     ['Burguro And Fryuro'] = "https://static.wikia.nocookie.net/stealabr/images/6/65/Burguro-And-Fryuro.png/revision/latest?cb=20251007133840",
     ['Garama and Madundung'] = "https://static.wikia.nocookie.net/stealabr/images/e/ee/Garamadundung.png/revision/latest?cb=20250816022557",
-    ['Nuclearo Dinossauro'] = "https://static.wikia.nocookie.net/stealabr/images/9/99/THERE_ARE_BUGS_UNDER_YOUR_SKIN.png/revision/latest?cb=20250902180735",
+    ['Nuclearo Dinossauro'] = "https://static.wikia.nocookie.net/stealabr/images/c/c6/Nuclearo_Dinosauro.png/revision/latest?cb=20250902180735",
     ['Los Burritos'] = "https://static.wikia.nocookie.net/stealabr/images/9/97/LosBurritos.png/revision/latest?cb=20251123123907",
     ['Orcaledon'] = "https://static.wikia.nocookie.net/stealabr/images/a/a6/Orcaledon.png/revision/latest?cb=20251119170121",
     ['La Taco Combinasion'] = "https://static.wikia.nocookie.net/stealabr/images/8/84/Latacocombi.png/revision/latest?cb=20251030015001",
