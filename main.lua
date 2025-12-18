@@ -1,5 +1,5 @@
 print('hopper started')
-pcall(function() writefile('time.txt', tostring(DateTime.now().UnixTimestamp + 25203)) end)
+pcall(function() writefile('time.txt', tostring(DateTime.now().UnixTimestamp + 25136)) end)
 local BACKEND_URL = "https://serverfetcher.onrender.com/"
 
 local WEBHOOKS = {
