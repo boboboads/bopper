@@ -235,7 +235,7 @@ local lastServerFetch = 0
 -- ==========================================================
 local function nextServer()
     lastServerFetch = os.clock()
-    local data = postJSON("next", { username = LocalPlayer.Name })
+    local data = postJSON("next", { username = LocalPlayer.Name, vpsName = vpsname or "unknown" })
     if type(data) == "table" and data.ok and data.id then
         return tostring(data.id)
     end
