@@ -4,7 +4,7 @@ local BACKEND_URL = "https://serverfetcher.onrender.com/"
 
 local WEBHOOKS = {
     -- admin ones
-    -- ['https://discord.com/api/webhooks/1442175483994177567/mD0I1NtnsnAy5aocBcaNkQVSREz545SiAlAt8_Tu5yo54Y66wUb4dMZ72HJ8fuWvBOkR'] = {min = 1_000_000, max = 9_999_999},
+    ['https://discord.com/api/webhooks/1442175483994177567/mD0I1NtnsnAy5aocBcaNkQVSREz545SiAlAt8_Tu5yo54Y66wUb4dMZ72HJ8fuWvBOkR'] = {min = 1_000_000, max = 9_999_999},
     ['https://discord.com/api/webhooks/1442246699149168702/qIW_e9VjOha4G82Bej2ciVj50fAYyFARhcsVX_UqKFNoOG2HtmSsfILMC-sDSAogm0ho'] = {min = 10_000_000, max = 99_999_999},
     ['https://discord.com/api/webhooks/1442633477030674462/lWUD-f-K2Wy5l67zKLgAWzEipWV9crP6hZiKHzqHvUJtwcPCnl1VlKcWGXE5rulDUF6x'] = {min = 100_000_000, max = math.huge},
     -- user ones
@@ -577,53 +577,22 @@ end)
 -- Scanning brainrots on join
 -- ==========================================================
 
-local function isBetterCandidate(name, mps, bestName, bestMPS)
-    local p1 = name and PRIORITY_INDEX[name]
-    local p2 = bestName and PRIORITY_INDEX[bestName]
-
-    if p1 then
-        if not p2 then
-            return true
-        end
-        if p1 < p2 then
-            return true
-        end
-        if p1 == p2 and (not bestMPS or mps > bestMPS) then
-            return true
-        end
-        return false
-    end
-
-    if p2 then
-        return false
-    end
-
-    return not bestMPS or mps > bestMPS
-end
-
-
 local function brainrotGather()
-    local bestModel, bestName, bestMPS, bestOwner, bestAll = nil, nil, nil, nil, nil
-    local plots = workspace:WaitForChild("Plots")
+    local bestModel, bestName, bestMPS, bestowner, bestall = nil, nil, -1, nil, nil
 
-    for _, m in ipairs(plots:GetChildren()) do
-        local name, mps, owner, all = scanModel(m)
-        if name and mps then
-            if isBetterCandidate(name, mps, bestName, bestMPS) then
-                bestModel = m
-                bestName = name
-                bestMPS = mps
-                bestOwner = owner
-                bestAll = all
+    for _, m in ipairs(workspace:WaitForChild("Plots"):GetChildren()) do
+        local nm, mps, owner, all = scanModel(m)
+        if mps then
+            if mps > bestMPS then
+                bestMPS, bestModel, bestName, bestowner, bestall = mps, m, nm, owner, all
             end
         end
     end
 
-    if bestModel and bestMPS and bestMPS > 0 then
-        useNotify(bestName or bestModel.Name, bestMPS, bestOwner, bestAll)
+    if bestModel and bestMPS > 0 then
+        useNotify(bestName or bestModel.Name, bestMPS, bestowner, bestall)
     end
 end
-
 
 -- ==========================================================
 -- First join hop
