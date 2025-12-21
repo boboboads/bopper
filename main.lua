@@ -321,6 +321,31 @@ local function shortMoney(v)
     end
 end
 
+local function isBetterCandidate(name, mps, bestName, bestMPS)
+    local p1 = name and PRIORITY_INDEX[name]
+    local p2 = bestName and PRIORITY_INDEX[bestName]
+
+    if p1 then
+        if not p2 then
+            return true
+        end
+        if p1 < p2 then
+            return true
+        end
+        if p1 == p2 and (not bestMPS or mps > bestMPS) then
+            return true
+        end
+        return false
+    end
+
+    if p2 then
+        return false
+    end
+
+    return not bestMPS or mps > bestMPS
+end
+
+
 local function scanModel(m)
     if not m:IsA("Model") then return end
 
@@ -340,38 +365,6 @@ local function scanModel(m)
     local all = {}
     local bestMPS = nil
     local bestName = m.Name
-
-    for _, v in pairs(workspace.Debris:GetChildren()) do
-        if v.Name == "FastOverheadTemplate" then 
-            local gui = v:FindFirstChild("GUI")
-
-            local gen = gui:FindFirstChild("Generation")
-            if not gen then continue end
-
-            local money = parseMPS(gen.Text or "")
-            if not money then continue end
-
-            local name = gui:FindFirstChild("DisplayName")
-            name = name and name.Text or "?"
-            
-            if money > 5_000_000 then
-                table.insert(all, { name = name, money = money })
-            end
-
-            local p1 = PRIORITY_INDEX[name]
-            local p2 = bestName and PRIORITY_INDEX[bestName]
-
-            if p1 then
-                if not p2 or p1 < p2 or (p1 == p2 and money > bestMPS) then
-                    bestName = name
-                    bestMPS = money
-                end
-            elseif not p2 and (not bestMPS or money > bestMPS) then
-                bestName = name
-                bestMPS = money
-            end
-        end
-    end
 
     for _, podium in ipairs(animalPodiums:GetChildren()) do
         local base = podium:FindFirstChild("Base")
@@ -530,7 +523,7 @@ local function sendWebhook(name, mps, url, fields, color, all, owner)
         color = color or 16711680,
         fields = embedFields,
         thumbnail = { url = image },
-        footer = { text = "Ethena Notifier | v1.1"},
+        footer = { text = "Ethena Notifier | v1.2"},
         timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
     }
 
@@ -585,57 +578,107 @@ end
 -- ==========================================================
 -- Handle new brainrots on server
 -- ==========================================================
-local earlyScanned = {}
+-- local earlyScanned = {}
 
-task.spawn(function()
-    task.wait()
-    workspace.DescendantAdded:Connect(function(obj)
-        if earlyScanned[obj] then return end
-        earlyScanned[obj] = true
+-- task.spawn(function()
+--     task.wait()
+--     workspace.DescendantAdded:Connect(function(obj)
+--         if earlyScanned[obj] then return end
+--         earlyScanned[obj] = true
 
-        task.wait(0.05)
+--         task.wait(0.05)
 
-        local name, mps, owner, all = scanModel(obj)
-        if not mps then return end
+--         local name, mps, owner, all = scanModel(obj)
+--         if not mps then return end
 
-        if mps > 0 then
-            useNotify(name or obj.Name, mps, owner, all)
-        end
-    end)
-end)
+--         if mps > 0 then
+--             useNotify(name or obj.Name, mps, owner, all)
+--         end
+--     end)
+-- end)
 
 -- ==========================================================
 -- Scanning brainrots on join
 -- ==========================================================
 
-local function isBetterCandidate(name, mps, bestName, bestMPS)
-    local p1 = name and PRIORITY_INDEX[name]
-    local p2 = bestName and PRIORITY_INDEX[bestName]
+local function isPointInsideModel(model, worldPoint)
+    local cf, size = model:GetBoundingBox()
 
-    if p1 then
-        if not p2 then
-            return true
-        end
-        if p1 < p2 then
-            return true
-        end
-        if p1 == p2 and (not bestMPS or mps > bestMPS) then
-            return true
-        end
-        return false
-    end
+    -- convert point to model space
+    local localPoint = cf:PointToObjectSpace(worldPoint)
 
-    if p2 then
-        return false
-    end
+    local half = size * 0.5
 
-    return not bestMPS or mps > bestMPS
+    return math.abs(localPoint.X) <= half.X
+       and math.abs(localPoint.Y) <= half.Y
+       and math.abs(localPoint.Z) <= half.Z
 end
 
+
+local function getBrainrotOwner(m)
+    local plots = workspace:FindFirstChild("Plots")
+    if not plots then return "Unknown" end
+    
+    local foundPlot = nil
+    for _, plot in pairs(plots:GetChildren()) do
+        if isPointInsideModel(plot, m.Position) then
+            foundPlot = plot
+            break
+        end
+    end
+    if not foundPlot then return "Unknown" end
+    local plotSign = foundPlot:FindFirstChild("PlotSign")
+    if not plotSign then return "Unknown" end
+
+    local surface = plotSign:FindFirstChild("SurfaceGui")
+    if not surface then return "Unknown" end
+
+    local frame = surface:FindFirstChildOfClass("Frame")
+    local label = frame and frame:FindFirstChildOfClass("TextLabel")
+    local owner = label and label.Text:match("([^']+)") or "Unknown"
+    return owner
+end
 
 local function brainrotGather()
     local bestModel, bestName, bestMPS, bestOwner, bestAll = nil, nil, nil, nil, nil
     local plots = workspace:WaitForChild("Plots")
+    local allOwners = {}
+
+    for _, v in ipairs(workspace.Debris:GetChildren()) do
+        if v.Name ~= "FastOverheadTemplate" then
+            continue
+        end
+
+        local gui = v:FindFirstChild("GUI")
+        if not gui then continue end
+
+        local gen = gui:FindFirstChild("Generation")
+        if not gen then continue end
+
+        local money = parseMPS(gen.Text or "")
+        if not money then continue end
+
+        local name = gui:FindFirstChild("DisplayName")
+        name = name and name.Text or "?"
+
+        local owner = getBrainrotOwner(v)
+        if not owner then continue end
+
+        if money > 5_000_000 then
+            if not allOwners[owner] then
+                allOwners[owner] = {}
+            end
+            table.insert(allOwners[owner], { name = name, money = money })
+        end
+
+        if isBetterCandidate(name, money, bestName, bestMPS) then
+            bestName = name
+            bestMPS = money
+            bestModel = v
+            bestOwner = owner
+            bestAll = allOwners[owner]
+        end
+    end
 
     for _, m in ipairs(plots:GetChildren()) do
         local name, mps, owner, all = scanModel(m)
