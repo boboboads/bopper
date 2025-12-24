@@ -649,7 +649,7 @@ local function brainrotGather()
             continue
         end
 
-        local gui = v:FindFirstChild("GUI")
+        local gui = v:FindFirstChild("AnimalOverhead")
         if not gui then continue end
 
         local gen = gui:FindFirstChild("Generation")
