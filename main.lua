@@ -649,7 +649,7 @@ local function brainrotGather()
             continue
         end
 
-        local gui = v:FindFirstChild("AnimalOverhead")
+        local gui = v:FindFirstChild("GUI")
         if not gui then continue end
 
         local gen = gui:FindFirstChild("Generation")
@@ -694,6 +694,7 @@ local function brainrotGather()
     end
 
     if bestModel and bestMPS and bestMPS > 0 then
+        table.sort(bestAll, function(a, b) return a.money > b.money end)
         useNotify(bestName or bestModel.Name, bestMPS, bestOwner, bestAll)
     end
 end
