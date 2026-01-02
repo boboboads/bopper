@@ -31,7 +31,7 @@ local PRIORITY_ANIMALS = {
      "Reinito Sleighito",
     "Fragrama and Chocrama",
     "Garama and Madundung",
-    "Los Spaghettis"
+    "Los Spaghettis",
     "Spooky and Pumpky",
     "La Secret Combinasion",
      "Lavadorito Spinito",
@@ -47,6 +47,7 @@ local PRIORITY_ANIMALS = {
     "Nuclearo Dinossauro",
     "Money Money Puggy"
 }
+
 local PRIORITY_INDEX = {}
 for i, v in ipairs(PRIORITY_ANIMALS) do
     PRIORITY_INDEX[v] = i
