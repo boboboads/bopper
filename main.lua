@@ -496,7 +496,7 @@ local function useNotify(name, mps, owner, all)
             continue
         end
 
-        if mps >= range.min and mps <= range.max and not range.priority then
+        if ((mps >= range.min and mps <= range.max) or (range.highlight and PRIORITY_INDEX[name])) and not range.priority then
             table.insert(urls, url)
         end
     end
