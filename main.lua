@@ -26,7 +26,7 @@ local PRIORITY_ANIMALS = {
     "Burguro And Fryuro",
      "La Casa Boo",
      "Ginger Gerat"
-     "Tralaledon"
+     "Tralaledon",
      "Festive 67",
      "Reinito Sleighito",
     "Fragrama and Chocrama",
@@ -35,7 +35,7 @@ local PRIORITY_ANIMALS = {
     "Spooky and Pumpky",
     "La Secret Combinasion",
      "Lavadorito Spinito",
-    "La Ginger Sekolah"
+    "La Ginger Sekolah",
      "Tictac Sahur",
      "Ketchuru and Musturu",
     "Chillin Chili",
