@@ -5,28 +5,37 @@ local BACKEND_URL = "https://serverfetcher.onrender.com/"
 local WEBHOOKS = {
     -- admin ones
     -- ['https://discord.com/api/webhooks/1442175483994177567/mD0I1NtnsnAy5aocBcaNkQVSREz545SiAlAt8_Tu5yo54Y66wUb4dMZ72HJ8fuWvBOkR'] = {min = 1_000_000, max = 9_999_999},
-    ['https://discord.com/api/webhooks/1442246699149168702/qIW_e9VjOha4G82Bej2ciVj50fAYyFARhcsVX_UqKFNoOG2HtmSsfILMC-sDSAogm0ho'] = {min = 10_000_000, max = 99_999_999},
-    ['https://discord.com/api/webhooks/1442633477030674462/lWUD-f-K2Wy5l67zKLgAWzEipWV9crP6hZiKHzqHvUJtwcPCnl1VlKcWGXE5rulDUF6x'] = {min = 100_000_000, max = math.huge},
+    ['https://canary.discord.com/api/webhooks/1456734181152391301/QgYBUHPmkxRUnYK_EsAEonBSa_X3aVOKGsGMVgExFDdLez9yRJrWM8KR36tB_fC9wG5h'] = {min = 10_000_000, max = 99_999_999},
+    ['https://canary.discord.com/api/webhooks/1456733998561890334/73mO-cG9C_3kgx8AoWc4yCJaV2EBZHTC2V4SWyhYUH3W-OUtzAVyPOAzjfrd5uo9V4bK'] = {min = 100_000_000, max = math.huge},
     -- user ones
     -- ['https://discord.com/api/webhooks/1442633779033411596/XnH3-3rlrj6NiNR7GVk6FhFszxkOmxZgzlg9ZoS8HAO17k1nte9TaoZr85uJHi9fPq7m'] = {min = 3_000_000, max = 9_999_999},
-    ['https://discord.com/api/webhooks/1442633978270978059/1W0Dxr21NtsNaFXf0LxHVdkpPTqgmsmmxI2txVR9NWFr8ZOp8YcPR4fuegwnq3IauQxC'] = {min = 100_000_000, max = math.huge, highlight = true}
+    ['https://canary.discord.com/api/webhooks/1456734885317447690/JJJ-J-cBb_JYDd1QrM37Mrfm0bXnyuGDicKqKgDqyYGlLdcN3qG3bYrKKGYIgC7ACgnY'] = {min = 100_000_000, max = math.huge, highlight = true, priority = true},
+    ['https://canary.discord.com/api/webhooks/1456734760981500106/y2Vmqr5ywAK_WIOdYwXjfYGvQRJ2eUvTeqdgBibsAORPU0QaUHU0naJMqHKCNRnAMivx'] = {min = 100_000_000, max = math.huge, highlight = true}
 }
 
 local PRIORITY_ANIMALS = {
     "Strawberry Elephant",
+    "Skibidi Toilet",
     "Meowl",
     "Headless Horseman",
+    "Dragon Gingerini",
     "Dragon Cannelloni",
      "La Supreme Combinasion",
     "Capitano Moby",
     "Cooki and Milki",
-    "Burguro and Fryuro",
+    "Burguro And Fryuro",
      "La Casa Boo",
+     "Ginger Gerat"
+     "Tralaledon"
+     "Festive 67",
+     "Reinito Sleighito",
     "Fragrama and Chocrama",
     "Garama and Madundung",
-    "Lavadorito Spinito",
+    "Los Spaghettis"
     "Spooky and Pumpky",
     "La Secret Combinasion",
+     "Lavadorito Spinito",
+    "La Ginger Sekolah"
      "Tictac Sahur",
      "Ketchuru and Musturu",
     "Chillin Chili",
@@ -38,7 +47,6 @@ local PRIORITY_ANIMALS = {
     "Nuclearo Dinossauro",
     "Money Money Puggy"
 }
-
 local PRIORITY_INDEX = {}
 for i, v in ipairs(PRIORITY_ANIMALS) do
     PRIORITY_INDEX[v] = i
@@ -439,7 +447,8 @@ local function sendWebhook(name, mps, url, fields, color, all, owner)
     }
 
     if all and all ~= "" then
-        table.insert(embedFields, 5, {
+        local pos = math.min(5, #embedFields + 1)
+        table.insert(embedFields, pos, {
             name = "**🎭 All Brainrots (>5m/s)**",
             value = "```" .. all .. "```",
             inline = false
@@ -451,7 +460,7 @@ local function sendWebhook(name, mps, url, fields, color, all, owner)
         color = color or 16711680,
         fields = embedFields,
         thumbnail = { url = image },
-        footer = { text = "Ethena Notifier | v1.3"},
+        footer = { text = "Moby Notifier | v1.3"},
         timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
     }
 
@@ -481,6 +490,11 @@ local function useNotify(name, mps, owner, all)
     sentKeys[key] = true
 
     for url, range in pairs(WEBHOOKS) do
+        if range.priority and PRIORITY_INDEX[name] then 
+            table.insert(urls, url)
+            continue
+        end
+
         if mps >= range.min and mps <= range.max then
             table.insert(urls, url)
         end
