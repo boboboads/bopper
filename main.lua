@@ -25,7 +25,7 @@ local PRIORITY_ANIMALS = {
     "Cooki and Milki",
     "Burguro And Fryuro",
      "La Casa Boo",
-     "Ginger Gerat"
+     "Ginger Gerat",
      "Tralaledon",
      "Festive 67",
      "Reinito Sleighito",
