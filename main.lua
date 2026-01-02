@@ -43,9 +43,9 @@ local PRIORITY_ANIMALS = {
     "La Taco Combinasion",
     "Tang Tang Keletang",
     "W or L",
-    "Spaghetti Tualetti",
+    -- "Spaghetti Tualetti",
     "Nuclearo Dinossauro",
-    "Money Money Puggy"
+    -- "Money Money Puggy"
 }
 
 local PRIORITY_INDEX = {}
