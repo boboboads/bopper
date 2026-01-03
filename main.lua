@@ -6,7 +6,8 @@ local WEBHOOKS = {
     -- admin ones
     -- ['https://discord.com/api/webhooks/1442175483994177567/mD0I1NtnsnAy5aocBcaNkQVSREz545SiAlAt8_Tu5yo54Y66wUb4dMZ72HJ8fuWvBOkR'] = {min = 1_000_000, max = 9_999_999},
     ['https://canary.discord.com/api/webhooks/1456734181152391301/QgYBUHPmkxRUnYK_EsAEonBSa_X3aVOKGsGMVgExFDdLez9yRJrWM8KR36tB_fC9wG5h'] = {min = 10_000_000, max = 99_999_999},
-    ['https://canary.discord.com/api/webhooks/1456733998561890334/73mO-cG9C_3kgx8AoWc4yCJaV2EBZHTC2V4SWyhYUH3W-OUtzAVyPOAzjfrd5uo9V4bK'] = {min = 100_000_000, max = math.huge},
+    ['https://canary.discord.com/api/webhooks/1456733998561890334/73mO-cG9C_3kgx8AoWc4yCJaV2EBZHTC2V4SWyhYUH3W-OUtzAVyPOAzjfrd5uo9V4bK'] = {min = 100_000_000, max = 999_999_999},
+    ['https://canary.discord.com/api/webhooks/1457065693412458498/RGOX3LDw4RPoMuMdGsJYrux-aVXYUdxlhrLM1ONpHiZds888fVUKBijVrZNpGkkH7L6N'] = {min = 1_000_000_000, max = math.huge},
     -- user ones
     -- ['https://discord.com/api/webhooks/1442633779033411596/XnH3-3rlrj6NiNR7GVk6FhFszxkOmxZgzlg9ZoS8HAO17k1nte9TaoZr85uJHi9fPq7m'] = {min = 3_000_000, max = 9_999_999},
     ['https://canary.discord.com/api/webhooks/1456734885317447690/JJJ-J-cBb_JYDd1QrM37Mrfm0bXnyuGDicKqKgDqyYGlLdcN3qG3bYrKKGYIgC7ACgnY'] = {min = 100_000_000, max = math.huge, highlight = true, priority = true},
@@ -30,6 +31,7 @@ local PRIORITY_ANIMALS = {
      "Festive 67",
      "Reinito Sleighito",
     "Fragrama and Chocrama",
+    "Fishino Clownino",
     "Garama and Madundung",
     "Los Spaghettis",
     "Spooky and Pumpky",
@@ -461,7 +463,7 @@ local function sendWebhook(name, mps, url, fields, color, all, owner)
         color = color or 16711680,
         fields = embedFields,
         thumbnail = { url = image },
-        footer = { text = "Moby Notifier | v1.3"},
+        footer = { text = "Moby Notifier | v1.4"},
         timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
     }
 
