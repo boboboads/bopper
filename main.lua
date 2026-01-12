@@ -21,6 +21,7 @@ local PRIORITY_ANIMALS = {
     "Headless Horseman",
     "Dragon Gingerini",
     "Dragon Cannelloni",
+    "Cerberus",
      "La Supreme Combinasion",
     "Capitano Moby",
     "Cooki and Milki",
