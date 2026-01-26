@@ -23,6 +23,7 @@ local PRIORITY_ANIMALS = {
     "Dragon Cannelloni",
     "Cerberus",
      "La Supreme Combinasion",
+     "Hydra Dragon Cannelloni",
     "Capitano Moby",
     "Cooki and Milki",
     "Burguro And Fryuro",
