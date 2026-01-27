@@ -494,6 +494,10 @@ local function useNotify(name, mps, owner, all)
     if sentKeys[key] then return end
     sentKeys[key] = true
 
+    if name == "Quesadilla Crocodila" or name == "Los Cucarachas" or name == "Triplito Tralaleritos" or name == "Pot Hotspot" or name == "Santa Hotspot" or name == "To to to Sahur" then
+        return
+    end
+
     for url, range in pairs(WEBHOOKS) do
         if range.priority and PRIORITY_INDEX[name] then 
             table.insert(urls, url)
