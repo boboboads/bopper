@@ -421,7 +421,7 @@ function normalizeName(name)
     return normalized
 end
 
-local function sendWebhook(name, mps, url, fields, color, all, owner)
+local function sendWebhook(name, mutation, mps, url, fields, color, all, owner)
     if url == "" or not url then return end
 
     local placeId = game.PlaceId
@@ -440,8 +440,13 @@ local function sendWebhook(name, mps, url, fields, color, all, owner)
     local formattedMps = shortMoney(mps)
     local image = 'https://www.mobynotifier.com/brainrots/'..normalizeName(name)
 
+    local formattedName = name
+    if mutation then
+        formattedName = string.format("[%s] %s", mutation, name)
+    end
+
     local embedFields = fields or {
-        { name = "🏷️ Name", value = "**" .. tostring(name or "Unknown") .. "**", inline = true },
+        { name = "🏷️ Name", value = "**" .. tostring(formattedName or "Unknown") .. "**", inline = true },
         { name = "💰 Money per sec", value = "**" .. formattedMps .. "**", inline = true },
         { name = "**👥 Players:**", value = "**" .. tostring(math.max(#Players:GetPlayers() - 1, 0))
             .. "**/**" .. tostring(Players.MaxPlayers or 0) .. "**", inline = true },
@@ -466,7 +471,7 @@ local function sendWebhook(name, mps, url, fields, color, all, owner)
         color = color or 16711680,
         fields = embedFields,
         thumbnail = { url = image },
-        footer = { text = "Moby Notifier | v1.4"},
+        footer = { text = "Moby Notifier | v1.5"},
         timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
     }
 
@@ -475,7 +480,12 @@ end
 
 
 local function formatEntry(entry)
-    return string.format("%s | %s", entry.name, shortMoney(entry.money))
+    local str = string.format("%s | %s", entry.name, shortMoney(entry.money))
+    if entry.mutation then
+        str = string.format("[%s] %s", entry.mutation, str)
+    end
+
+    return str
 end
 
 local function formatList(list)
@@ -488,7 +498,7 @@ end
 
 local sentKeys = {}
 
-local function useNotify(name, mps, owner, all)
+local function useNotify(name, mutation, mps, owner, all)
     local urls = {}
 
     local key = tostring(game.JobId) .. "|" .. tostring(name) .. "|" .. tostring(math.floor(mps or 0))
@@ -512,17 +522,22 @@ local function useNotify(name, mps, owner, all)
 
     local allBrainrots = formatList(all or {})
 
+    local formattedName = name
+    if mutation then
+        formattedName = string.format("[%s] %s", mutation, name)
+    end
+
     for _, url in ipairs(urls) do
         local highlight = WEBHOOKS[url].highlight
         local fields = highlight and {
-            { name = "🏷️ Name", value = "**__" .. tostring(name or "Unknown") .. "__**", inline = true },
+            { name = "🏷️ Name", value = "**__" .. tostring(formattedName or "Unknown") .. "__**", inline = true },
             { name = "💰 Money per sec", value = "**__" .. shortMoney(mps) .. "__**", inline = true },
             { name = "**👥 Players:**", value = "**__" .. tostring(math.max(#Players:GetPlayers() - 1, 0))
                 .. "__/**__" .. tostring(Players.MaxPlayers or 0) .. "__", inline = true },
         } or nil
         local color = (highlight or mps >= 100_000_000) and 16766720 or nil
         task.spawn(function()
-            sendWebhook(name, mps, url, fields, color, allBrainrots, owner)
+            sendWebhook(name, mutation, mps, url, fields, color, allBrainrots, owner)
         end)
     end
 end
@@ -592,7 +607,7 @@ local function getBrainrotOwner(m)
 end
 
 local function brainrotGather()
-    local bestModel, bestName, bestMPS, bestOwner, bestAll = nil, nil, nil, nil, nil
+    local bestModel, bestName, bestMPS, bestOwner, bestMut, bestAll = nil, nil, nil, nil, nil, nil
     local plots = workspace:WaitForChild("Plots")
     local allOwners = {}
 
@@ -613,6 +628,9 @@ local function brainrotGather()
         local name = gui:FindFirstChild("DisplayName")
         name = name and name.Text or "?"
 
+        local mutation = gui:FindFirstChild("Mutation")
+        local mut = mutation.Visible and mutation.Text or false
+
         local owner = getBrainrotOwner(v)
         if not owner then continue end
 
@@ -620,7 +638,7 @@ local function brainrotGather()
             if not allOwners[owner] then
                 allOwners[owner] = {}
             end
-            table.insert(allOwners[owner], { name = name, money = money })
+            table.insert(allOwners[owner], { name = name, mutation = mut, money = money })
         end
 
         if isBetterCandidate(name, money, bestName, bestMPS) then
@@ -629,6 +647,7 @@ local function brainrotGather()
             bestModel = v
             bestOwner = owner
             bestAll = allOwners[owner]
+            bestMut = mut
         end
     end
 
@@ -647,7 +666,7 @@ local function brainrotGather()
 
     if bestModel and bestMPS and bestMPS > 0 then
         table.sort(bestAll, function(a, b) return a.money > b.money end)
-        useNotify(bestName or bestModel.Name, bestMPS, bestOwner, bestAll)
+        useNotify(bestName or bestModel.Name, bestMut, bestMPS, bestOwner, bestAll)
     end
 end
 
