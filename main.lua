@@ -631,6 +631,10 @@ local function brainrotGather()
         local mutation = gui:FindFirstChild("Mutation")
         local mut = mutation.Visible and mutation.Text or false
 
+        if mut and string.find(mut, "Yang") then
+            mut = "Yin Yang"
+        end
+
         local owner = getBrainrotOwner(v)
         if not owner then continue end
 
