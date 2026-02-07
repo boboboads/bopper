@@ -26,7 +26,9 @@ local PRIORITY_ANIMALS = {
     "Cerberus",
      "Hydra Dragon Cannelloni",
     "Capitano Moby",
+    "Rosey and Teddy",
     "Cooki and Milki",
+    "Popcuru and Fizzuru",
     "Burguro And Fryuro",
      "La Casa Boo",
      "Ginger Gerat",
@@ -49,7 +51,7 @@ local PRIORITY_ANIMALS = {
     "Tang Tang Keletang",
     "W or L",
     -- "Spaghetti Tualetti",
-    "Nuclearo Dinossauro",
+    -- "Nuclearo Dinossauro",
     -- "Money Money Puggy"
 }
 
