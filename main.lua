@@ -73,6 +73,8 @@ local Players         = game:GetService("Players")
 local CoreGui         = game:GetService("CoreGui")
 local LocalPlayer     = Players.LocalPlayer or Players.PlayerAdded:Wait()
 
+pcall(TeleportService.SetTeleportGui, TeleportService, workspace)
+
 -- ==========================================================
 -- Optimazations
 -- ==========================================================
@@ -207,6 +209,8 @@ function tryTeleportTo(jobId)
     lastAttemptJobId = tostring(jobId)
 
     local ok = pcall(function()
+        pcall(TeleportService.TeleportCancel, TeleportService)
+        pcall(TeleportService.SetTeleportGui, TeleportService, nil)
         TeleportService:TeleportToPlaceInstance(game.PlaceId, lastAttemptJobId, LocalPlayer)
     end)
     lastTeleportAt = os.clock()
@@ -698,6 +702,8 @@ local function oneShotHop()
     task.wait(math.random(45, 70) / 100)
 
     pcall(function()
+        pcall(TeleportService.TeleportCancel, TeleportService)
+        pcall(TeleportService.SetTeleportGui, TeleportService, nil)
         TeleportService:TeleportToPlaceInstance(game.PlaceId, jobId, LocalPlayer)
     end)
 end
