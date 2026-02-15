@@ -12,7 +12,7 @@ local WEBHOOKS = {
     -- ['https://discord.com/api/webhooks/1442633779033411596/XnH3-3rlrj6NiNR7GVk6FhFszxkOmxZgzlg9ZoS8HAO17k1nte9TaoZr85uJHi9fPq7m'] = {min = 3_000_000, max = 9_999_999},
     ['https://canary.discord.com/api/webhooks/1456734885317447690/JJJ-J-cBb_JYDd1QrM37Mrfm0bXnyuGDicKqKgDqyYGlLdcN3qG3bYrKKGYIgC7ACgnY'] = {min = 100_000_000, max = math.huge, highlight = true, priority = true},
     ['https://canary.discord.com/api/webhooks/1456734760981500106/y2Vmqr5ywAK_WIOdYwXjfYGvQRJ2eUvTeqdgBibsAORPU0QaUHU0naJMqHKCNRnAMivx'] = {min = 100_000_000, max = math.huge, highlight = true},
-    ['https://canary.discord.com/api/webhooks/1472697891918450872/BaQHcAfIQc8iLjhyr2VBBiARPPHKV6QOJpSOFN5GniW7pT77aZ0l_axeJjqKssCxnDOC'] = {min = 100_000_000_000, max = math.huge, highlight = true, best = true}
+    ['https://canary.discord.com/api/webhooks/1472699908095213658/CH1z6IE2s8exG9T32qHj7r2UezDfzMxK-X8oH5QUlXWJ2tE8W7Iz279jNBNchzLVwxpD'] = {min = 100_000_000_000, max = math.huge, highlight = true, best = true}
 }
 
 local PRIORITY_ANIMALS = {
@@ -530,8 +530,11 @@ local function useNotify(name, mutation, mps, owner, all)
     end
 
     for url, range in pairs(WEBHOOKS) do
-        if range.best and BEST_ANIMALS[name] then
-            table.insert(urls, url)
+        if range.best then
+            if BEST_ANIMALS[name] then
+                table.insert(urls, url)
+            end
+
             continue
         end
 
