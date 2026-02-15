@@ -11,7 +11,8 @@ local WEBHOOKS = {
     -- user ones
     -- ['https://discord.com/api/webhooks/1442633779033411596/XnH3-3rlrj6NiNR7GVk6FhFszxkOmxZgzlg9ZoS8HAO17k1nte9TaoZr85uJHi9fPq7m'] = {min = 3_000_000, max = 9_999_999},
     ['https://canary.discord.com/api/webhooks/1456734885317447690/JJJ-J-cBb_JYDd1QrM37Mrfm0bXnyuGDicKqKgDqyYGlLdcN3qG3bYrKKGYIgC7ACgnY'] = {min = 100_000_000, max = math.huge, highlight = true, priority = true},
-    ['https://canary.discord.com/api/webhooks/1456734760981500106/y2Vmqr5ywAK_WIOdYwXjfYGvQRJ2eUvTeqdgBibsAORPU0QaUHU0naJMqHKCNRnAMivx'] = {min = 100_000_000, max = math.huge, highlight = true}
+    ['https://canary.discord.com/api/webhooks/1456734760981500106/y2Vmqr5ywAK_WIOdYwXjfYGvQRJ2eUvTeqdgBibsAORPU0QaUHU0naJMqHKCNRnAMivx'] = {min = 100_000_000, max = math.huge, highlight = true},
+    ['https://canary.discord.com/api/webhooks/1472697891918450872/BaQHcAfIQc8iLjhyr2VBBiARPPHKV6QOJpSOFN5GniW7pT77aZ0l_axeJjqKssCxnDOC'] = {min = 100_000_000_000, max = math.huge, highlight = true, best = true}
 }
 
 local PRIORITY_ANIMALS = {
@@ -53,6 +54,19 @@ local PRIORITY_ANIMALS = {
     -- "Spaghetti Tualetti",
     -- "Nuclearo Dinossauro",
     -- "Money Money Puggy"
+}
+
+local BEST_ANIMALS = {
+    ["Strawberry Elephant"] = true,
+    ["Skibidi Toilet"] = true,
+    ["Meowl"] = true,
+    ["Headless Horseman"] = true,
+    ["Dragon Gingerini"] = true,
+    ["Dragon Cannelloni"] = true,
+    ["Ketupat Bros"] = true,
+    ["La Supreme Combinasion"] = true,
+    ["Cerberus"] = true,
+    ["Hydra Dragon Cannelloni"] = true
 }
 
 local PRIORITY_INDEX = {}
@@ -477,7 +491,7 @@ local function sendWebhook(name, mutation, mps, url, fields, color, all, owner)
         color = color or 16711680,
         fields = embedFields,
         thumbnail = { url = image },
-        footer = { text = "Moby Notifier | v1.5"},
+        footer = { text = "Moby Notifier | v1.6"},
         timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
     }
 
@@ -516,6 +530,11 @@ local function useNotify(name, mutation, mps, owner, all)
     end
 
     for url, range in pairs(WEBHOOKS) do
+        if range.best and BEST_ANIMALS[name] then
+            table.insert(urls, url)
+            continue
+        end
+
         if range.priority and PRIORITY_INDEX[name] then 
             table.insert(urls, url)
             continue
