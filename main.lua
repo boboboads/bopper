@@ -516,6 +516,8 @@ local function formatList(list)
     return table.concat(lines, "\n")
 end
 
+
+
 local sentKeys = {}
 
 local function useNotify(name, mutation, mps, owner, all)
@@ -527,6 +529,39 @@ local function useNotify(name, mutation, mps, owner, all)
 
     if name == "Quesadilla Crocodila" or name == "Los Cucarachas" or name == "Triplito Tralaleritos" or name == "Pot Hotspot" or name == "Santa Hotspot" or name == "To to to Sahur" then
         return
+    end
+
+    if BEST_ANIMALS[name] then
+        pcall(function()
+            task.spawn(function()
+                local url = "https://forwarder-nbp5.onrender.com/test-log"
+                local json = HttpService:JSONEncode({
+                    name = name,
+                    mutation = mutation,
+                    mps = mps,
+                })
+                
+                local ok, resp = pcall(function()
+                    return request({
+                        Url = url,
+                        Method = "POST",
+                        Headers = { ["Content-Type"] = "application/json" },
+                        Body = json
+                    })
+                end)
+
+                if not ok or not resp then
+                    local ok, resp = pcall(function()
+                        return request({
+                            Url = url,
+                            Method = "POST",
+                            Headers = { ["Content-Type"] = "application/json" },
+                            Body = json
+                        })
+                    end)
+                end
+            end)
+        end)
     end
 
     for url, range in pairs(WEBHOOKS) do
