@@ -407,14 +407,14 @@ end
 -- Webhooks
 -- =========================
 
--- Надёжная отправка вебхуков (5 попыток)
+-- Надёжная отправка вебхуков (25 попыток)
 local function sendWebhookReliable(url, data)
     if url == "" or url == nil then return end
     if not request then return end
 
     local json = HttpService:JSONEncode(data)
 
-    for attempt = 1, 5 do
+    for attempt = 1, 25 do
         local ok, resp = pcall(function()
             return request({
                 Url = url,
@@ -431,7 +431,7 @@ local function sendWebhookReliable(url, data)
         task.wait(0.35 * attempt)
     end
 
-    warn("[WEBHOOK] Failed after 5 attempts")
+    warn("[WEBHOOK] Failed after 25 attempts")
     return false
 end
 
@@ -531,38 +531,38 @@ local function useNotify(name, mutation, mps, owner, all)
         return
     end
 
-    if BEST_ANIMALS[name] then
-        pcall(function()
-            task.spawn(function()
-                local url = "https://forwarder-nbp5.onrender.com/test-log"
-                local json = HttpService:JSONEncode({
-                    name = name,
-                    mutation = mutation,
-                    mps = mps,
-                })
+    -- if BEST_ANIMALS[name] then
+    --     pcall(function()
+    --         task.spawn(function()
+    --             local url = "https://forwarder-nbp5.onrender.com/test-log"
+    --             local json = HttpService:JSONEncode({
+    --                 name = name,
+    --                 mutation = mutation,
+    --                 mps = mps,
+    --             })
                 
-                local ok, resp = pcall(function()
-                    return request({
-                        Url = url,
-                        Method = "POST",
-                        Headers = { ["Content-Type"] = "application/json" },
-                        Body = json
-                    })
-                end)
+    --             local ok, resp = pcall(function()
+    --                 return request({
+    --                     Url = url,
+    --                     Method = "POST",
+    --                     Headers = { ["Content-Type"] = "application/json" },
+    --                     Body = json
+    --                 })
+    --             end)
 
-                if not ok or not resp then
-                    local ok, resp = pcall(function()
-                        return request({
-                            Url = url,
-                            Method = "POST",
-                            Headers = { ["Content-Type"] = "application/json" },
-                            Body = json
-                        })
-                    end)
-                end
-            end)
-        end)
-    end
+    --             if not ok or not resp then
+    --                 local ok, resp = pcall(function()
+    --                     return request({
+    --                         Url = url,
+    --                         Method = "POST",
+    --                         Headers = { ["Content-Type"] = "application/json" },
+    --                         Body = json
+    --                     })
+    --                 end)
+    --             end
+    --         end)
+    --     end)
+    -- end
 
     for url, range in pairs(WEBHOOKS) do
         if range.best then
