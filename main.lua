@@ -441,6 +441,18 @@ function normalizeName(name)
     return normalized
 end
 
+local function getIsDuels(displayPlayerName)
+    if not displayPlayerName then return false end
+
+    for k, v in pairs(Players:GetPlayers()) do
+        if v.DisplayName == displayPlayerName then
+            return v:GetAttribute("__duels_block_steal") == true
+        end
+    end
+    
+    return false
+end
+
 local function sendWebhook(name, mutation, mps, url, fields, color, all, owner)
     if url == "" or not url then return end
 
@@ -486,8 +498,10 @@ local function sendWebhook(name, mutation, mps, url, fields, color, all, owner)
         })
     end
 
+    local emoji = getIsDuels(owner) and "⚔️" or "🙉"
+
     local embed = {
-        title = "🙉 Brainrot Notify",
+        title = emoji .. " Brainrot Notify",
         color = color or 16711680,
         fields = embedFields,
         thumbnail = { url = image },
