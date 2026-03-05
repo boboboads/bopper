@@ -2,32 +2,21 @@ print('hopper started')
 pcall(function() writefile('time.txt', tostring(DateTime.now().UnixTimestamp + 25215)) end)
 local BACKEND_URL = "https://serverfetcher.onrender.com/"
 
-local WEBHOOKS = {
-    -- admin ones
-    -- ['https://discord.com/api/webhooks/1442175483994177567/mD0I1NtnsnAy5aocBcaNkQVSREz545SiAlAt8_Tu5yo54Y66wUb4dMZ72HJ8fuWvBOkR'] = {min = 1_000_000, max = 9_999_999},
-    ['https://canary.discord.com/api/webhooks/1456734181152391301/QgYBUHPmkxRUnYK_EsAEonBSa_X3aVOKGsGMVgExFDdLez9yRJrWM8KR36tB_fC9wG5h'] = {min = 10_000_000, max = 99_999_999},
-    ['https://canary.discord.com/api/webhooks/1456733998561890334/73mO-cG9C_3kgx8AoWc4yCJaV2EBZHTC2V4SWyhYUH3W-OUtzAVyPOAzjfrd5uo9V4bK'] = {min = 100_000_000, max = 999_999_999},
-    ['https://canary.discord.com/api/webhooks/1457065693412458498/RGOX3LDw4RPoMuMdGsJYrux-aVXYUdxlhrLM1ONpHiZds888fVUKBijVrZNpGkkH7L6N'] = {min = 1_000_000_000, max = math.huge},
-    -- user ones
-    -- ['https://discord.com/api/webhooks/1442633779033411596/XnH3-3rlrj6NiNR7GVk6FhFszxkOmxZgzlg9ZoS8HAO17k1nte9TaoZr85uJHi9fPq7m'] = {min = 3_000_000, max = 9_999_999},
-    ['https://canary.discord.com/api/webhooks/1456734885317447690/JJJ-J-cBb_JYDd1QrM37Mrfm0bXnyuGDicKqKgDqyYGlLdcN3qG3bYrKKGYIgC7ACgnY'] = {min = 100_000_000, max = math.huge, highlight = true, priority = true},
-    ['https://canary.discord.com/api/webhooks/1456734760981500106/y2Vmqr5ywAK_WIOdYwXjfYGvQRJ2eUvTeqdgBibsAORPU0QaUHU0naJMqHKCNRnAMivx'] = {min = 100_000_000, max = math.huge, highlight = true},
-    ['https://canary.discord.com/api/webhooks/1472699908095213658/CH1z6IE2s8exG9T32qHj7r2UezDfzMxK-X8oH5QUlXWJ2tE8W7Iz279jNBNchzLVwxpD'] = {min = 100_000_000_000, max = math.huge, highlight = true, best = true}
-}
 
 local PRIORITY_ANIMALS = {
     "Strawberry Elephant",
-    "Skibidi Toilet",
-    "Meowl",
     "Headless Horseman",
+    "Meowl",
+    "Skibidi Toilet",
     "Dragon Gingerini",
     "Dragon Cannelloni",
-    "Ketupat Bros",
     "La Supreme Combinasion",
-    "Cerberus",
-     "Hydra Dragon Cannelloni",
-    "Capitano Moby",
+    "Celestial Pegasus",
     "Rosey and Teddy",
+    "Hydra Dragon Cannelloni",
+    "Cerberus",
+    "Ketupat Bros",
+    "Capitano Moby",
     "Cooki and Milki",
     "Popcuru and Fizzuru",
     "Burguro And Fryuro",
@@ -66,7 +55,8 @@ local BEST_ANIMALS = {
     ["Ketupat Bros"] = true,
     ["La Supreme Combinasion"] = true,
     ["Cerberus"] = true,
-    ["Hydra Dragon Cannelloni"] = true
+    ["Hydra Dragon Cannelloni"] = true,
+    ["Celestial Pegasus"] = true,
 }
 
 local PRIORITY_INDEX = {}
@@ -435,6 +425,26 @@ local function sendWebhookReliable(url, data)
     return false
 end
 
+local function trySendNotify(url, tbl)
+    local body = HttpService:JSONEncode(tbl or {})
+    if request then
+        local ok, resp = pcall(function()
+            return request({
+                Url = url,
+                Method = "POST",
+                Headers = { ["Content-Type"] = "application/json" },
+                Body = body
+            })
+        end)
+        if not ok or not resp or not (resp.Body or resp.body) then return nil end
+        local ok2, data = pcall(function()
+            return HttpService:JSONDecode(resp.Body or resp.body)
+        end)
+        if not ok2 then return nil end
+        return data
+    end
+end
+
 function normalizeName(name)
     local lower = string.lower(name)
     local normalized = string.gsub(lower, "%s+", "-")
@@ -498,18 +508,7 @@ local function sendWebhook(name, mutation, mps, url, fields, color, all, owner)
         })
     end
 
-    local emoji = getIsDuels(owner) and "⚔️" or "🙉"
 
-    local embed = {
-        title = emoji .. " Brainrot Notify",
-        color = color or 16711680,
-        fields = embedFields,
-        thumbnail = { url = image },
-        footer = { text = "Moby Notifier | v1.6"},
-        timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
-    }
-
-    sendWebhookReliable(url, { embeds = { embed } })
 end
 
 
@@ -545,77 +544,40 @@ local function useNotify(name, mutation, mps, owner, all)
         return
     end
 
-    -- if BEST_ANIMALS[name] then
-    --     pcall(function()
-    --         task.spawn(function()
-    --             local url = "https://forwarder-nbp5.onrender.com/test-log"
-    --             local json = HttpService:JSONEncode({
-    --                 name = name,
-    --                 mutation = mutation,
-    --                 mps = mps,
-    --             })
-                
-    --             local ok, resp = pcall(function()
-    --                 return request({
-    --                     Url = url,
-    --                     Method = "POST",
-    --                     Headers = { ["Content-Type"] = "application/json" },
-    --                     Body = json
-    --                 })
-    --             end)
-
-    --             if not ok or not resp then
-    --                 local ok, resp = pcall(function()
-    --                     return request({
-    --                         Url = url,
-    --                         Method = "POST",
-    --                         Headers = { ["Content-Type"] = "application/json" },
-    --                         Body = json
-    --                     })
-    --                 end)
-    --             end
-    --         end)
-    --     end)
-    -- end
-
-    for url, range in pairs(WEBHOOKS) do
-        if range.best then
-            if BEST_ANIMALS[name] then
-                table.insert(urls, url)
-            end
-
-            continue
-        end
-
-        if range.priority and PRIORITY_INDEX[name] then 
-            table.insert(urls, url)
-            continue
-        end
-
-        if ((mps >= range.min and mps <= range.max) or (range.highlight and PRIORITY_INDEX[name])) and not range.priority then
-            table.insert(urls, url)
-        end
-    end
-
     local allBrainrots = formatList(all or {})
 
-    local formattedName = name
-    if mutation then
-        formattedName = string.format("[%s] %s", mutation, name)
-    end
+    local formattedMps = shortMoney(mps)
+    local jobId = game.JobId
+    local formattedJobId = string.format("%s-%s-%s-%s-%s",
+        string.sub(jobId, 1, 8),
+        string.sub(jobId, 10, 13),
+        string.sub(jobId, 15, 18),
+        string.sub(jobId, 20, 23),
+        string.sub(jobId, 25, 36)
+    )
 
-    for _, url in ipairs(urls) do
-        local highlight = WEBHOOKS[url].highlight
-        local fields = highlight and {
-            { name = "🏷️ Name", value = "**__" .. tostring(formattedName or "Unknown") .. "__**", inline = true },
-            { name = "💰 Money per sec", value = "**__" .. shortMoney(mps) .. "__**", inline = true },
-            { name = "**👥 Players:**", value = "**__" .. tostring(math.max(#Players:GetPlayers() - 1, 0))
-                .. "__/**__" .. tostring(Players.MaxPlayers or 0) .. "__", inline = true },
-        } or nil
-        local color = (highlight or mps >= 100_000_000) and 16766720 or nil
-        task.spawn(function()
-            sendWebhook(name, mutation, mps, url, fields, color, allBrainrots, owner)
-        end)
+    local sent = false
+    while not sent do
+        local try = 1
+        local status = trySendNotify("https://forwarder-nbp5.onrender.com/test", {
+            bubble = "498c4177376594d0ec448eecc953de069b9f220ef524cc351d02caecd7c4f6a4",
+            data = {
+                name = name,
+                mutation = mutation,
+                money = formattedMps,
+                owner = owner,
+                all = allBrainrots,
+                jobid = formattedJobId,
+                players = #Players:GetPlayers() - 1,
+                isDuels = getIsDuels(owner)
+            }
+        })
+        if not status then
+            task.wait(0.1 * try)
+            try = try + 1
+        else
+            sent = true
+        end
     end
 end
 
