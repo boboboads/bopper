@@ -1,3 +1,4 @@
+getgenv().vpsname = "M87"
 print('hopper started')
 pcall(function() writefile('time.txt', tostring(DateTime.now().UnixTimestamp + 25215)) end)
 local BACKEND_URL = "https://serverfetcher.onrender.com/"
@@ -767,7 +768,7 @@ task.spawn(function()
         character = lp.CharacterAdded:Wait()
     end
 
-    task.wait(1.0)
+    -- task.wait(1.0)
     pcall(function() brainrotGather() end)
     task.wait(1.0)
     pcall(function() brainrotGather() end)
@@ -777,16 +778,16 @@ task.spawn(function()
             task.wait(WEBHOOK_REFRESH)
         end
     end)
-    task.wait(1.0)
+    task.wait(480.0)
     oneShotHop()
 end)
 
-task.spawn(function()
-    while true do
-        task.wait(math.random(5, 10))
-        if os.clock() - lastServerFetch < 10 then continue end
-        oneShotHop()
-    end
-end)
+-- task.spawn(function()
+--     while true do
+--         task.wait(math.random(5, 10))
+--         if os.clock() - lastServerFetch < 10 then continue end
+--         oneShotHop()
+--     end
+-- end)
 
 -- torch, chatgpt ethiopia and more
