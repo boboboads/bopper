@@ -533,7 +533,7 @@ end
 
 local sentKeys = {}
 
-local function useNotify(name, mutation, mps, owner, all)
+local function useNotify(name, mutation, mps, owner, all, inDuel)
     local urls = {}
 
     local key = tostring(game.JobId) .. "|" .. tostring(name) .. "|" .. tostring(math.floor(mps or 0))
@@ -571,7 +571,7 @@ local function useNotify(name, mutation, mps, owner, all)
                 all = allBrainrots,
                 jobid = formattedJobId,
                 players = #Players:GetPlayers() - 1,
-                isDuels = getIsDuels(owner)
+                isDuels = getIsDuels(owner) or inDuel or false,
             }
         })
         if not status then
@@ -648,7 +648,7 @@ local function getBrainrotOwner(m)
 end
 
 local function brainrotGather()
-    local bestModel, bestName, bestMPS, bestOwner, bestMut, bestAll = nil, nil, nil, nil, nil, nil
+    local bestModel, bestName, bestMPS, bestOwner, bestMut, bestAll, bestDuels = nil, nil, nil, nil, nil, nil, nil
     local plots = workspace:WaitForChild("Plots")
     local allOwners = {}
 
@@ -672,6 +672,14 @@ local function brainrotGather()
         local mutation = gui:FindFirstChild("Mutation")
         local mut = mutation.Visible and mutation.Text or false
 
+        local isDuels = false
+        for k, v in pairs(gui:GetChildren()) do
+            if v:IsA("TextLabel") and v.Visible and v.Text and string.lower(v.Text) == "in duel" then
+                isDuels = true
+                break
+            end
+        end
+
         if mut and string.find(mut, "Yang") then
             mut = "Yin Yang"
         end
@@ -693,6 +701,7 @@ local function brainrotGather()
             bestOwner = owner
             bestAll = allOwners[owner]
             bestMut = mut
+            bestDuels = isDuels
         end
     end
 
@@ -711,7 +720,7 @@ local function brainrotGather()
 
     if bestModel and bestMPS and bestMPS > 0 then
         table.sort(bestAll, function(a, b) return a.money > b.money end)
-        useNotify(bestName or bestModel.Name, bestMut, bestMPS, bestOwner, bestAll)
+        useNotify(bestName or bestModel.Name, bestMut, bestMPS, bestOwner, bestAll, bestDuels)
     end
 end
 
