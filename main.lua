@@ -1,4 +1,3 @@
-getgenv().vpsname = "M87"
 print('hopper started')
 pcall(function() writefile('time.txt', tostring(DateTime.now().UnixTimestamp + 25215)) end)
 local BACKEND_URL = "https://serverfetcher.onrender.com/"
@@ -778,7 +777,7 @@ task.spawn(function()
             task.wait(WEBHOOK_REFRESH)
         end
     end)
-    task.wait(480.0)
+    task.wait(300.0)
     oneShotHop()
 end)
 
