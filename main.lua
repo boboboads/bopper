@@ -563,6 +563,7 @@ local function useNotify(name, mutation, mps, owner, all, inDuel)
         local try = 1
         local status = trySendNotify("https://forwarder-nbp5.onrender.com/test", {
             bubble = "498c4177376594d0ec448eecc953de069b9f220ef524cc351d02caecd7c4f6a4",
+            vps = vpsname or "unknown",
             data = {
                 name = name,
                 mutation = mutation,
