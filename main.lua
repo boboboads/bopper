@@ -582,6 +582,17 @@ local function useNotify(name, mutation, mps, owner, all, inDuel)
             sent = true
         end
     end
+
+    if PRIORITY_INDEX[name] then
+        task.spawn(function()
+            while true do
+                -- task.wait(math.random(5, 10))
+                -- if os.clock() - lastServerFetch < 10 then continue end
+                oneShotHop()
+                task.wait(1)
+            end
+        end)
+    end
 end
 
 -- ==========================================================
@@ -777,7 +788,7 @@ task.spawn(function()
             task.wait(WEBHOOK_REFRESH)
         end
     end)
-    task.wait(300.0)
+    task.wait(900.0)
     oneShotHop()
 end)
 
