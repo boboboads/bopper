@@ -16,6 +16,7 @@ local PRIORITY_ANIMALS = {
     "Hydra Dragon Cannelloni",
     "Cerberus",
     "Ketupat Bros",
+    "Griffin",
     "Capitano Moby",
     "Cooki and Milki",
     "Popcuru and Fizzuru",
@@ -456,7 +457,7 @@ local function getIsDuels(displayPlayerName)
 
     for k, v in pairs(Players:GetPlayers()) do
         if v.DisplayName == displayPlayerName then
-            return v:GetAttribute("__duels_block_steal") == true
+            return (v:GetAttribute("__duels_block_steal") == true) or (v.Character and v.Character:GetAttribute("duels_block_steal"))
         end
     end
     
