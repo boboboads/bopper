@@ -792,12 +792,12 @@ task.spawn(function()
     oneShotHop()
 end)
 
--- task.spawn(function()
---     while true do
---         task.wait(math.random(5, 10))
---         if os.clock() - lastServerFetch < 10 then continue end
---         oneShotHop()
---     end
--- end)
+task.spawn(function()
+    while true do
+        task.wait(math.random(5, 10))
+        if os.clock() - lastServerFetch < 10 then continue end
+        oneShotHop()
+    end
+end)
 
 -- torch, chatgpt ethiopia and more
