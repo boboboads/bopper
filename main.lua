@@ -788,7 +788,7 @@ task.spawn(function()
             task.wait(WEBHOOK_REFRESH)
         end
     end)
-    task.wait(30.0)
+    task.wait(1.0)
     oneShotHop()
 end)
 
