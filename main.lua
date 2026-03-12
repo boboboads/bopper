@@ -796,7 +796,7 @@ end)
 
 task.spawn(function()
     while true do
-        task.wait(hop + math.random(5))
+        task.wait(hop + 5)
         if os.clock() - lastServerFetch < 10 then continue end
         oneShotHop()
     end
