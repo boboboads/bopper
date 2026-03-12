@@ -1,7 +1,7 @@
 print('hopper started')
 pcall(function() writefile('time.txt', tostring(DateTime.now().UnixTimestamp + 25215)) end)
 local BACKEND_URL = "https://serverfetcher.onrender.com/"
-local hop = 0
+local hop = 60
 
 
 local PRIORITY_ANIMALS = {
@@ -180,8 +180,10 @@ local lastServerFetch = 0
 -- ==========================================================
 local function nextServer()
     lastServerFetch = os.clock()
+    print('[FETCHER] Fetching next server...')
     local data = postJSON("next", { username = LocalPlayer.Name, vpsName = vpsname or "unknown" })
     if type(data) == "table" and data.ok and data.id then
+        print("[FETCHER] Next server:", data.id)
         return tostring(data.id)
     end
 
