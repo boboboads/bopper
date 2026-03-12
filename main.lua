@@ -1,6 +1,7 @@
 print('hopper started')
 pcall(function() writefile('time.txt', tostring(DateTime.now().UnixTimestamp + 25215)) end)
 local BACKEND_URL = "https://serverfetcher.onrender.com/"
+local hop = 60
 
 
 local PRIORITY_ANIMALS = {
@@ -584,7 +585,7 @@ local function useNotify(name, mutation, mps, owner, all, inDuel)
         end
     end
 
-    if PRIORITY_INDEX[name] then
+    if PRIORITY_INDEX[name] and hop > 0 then
         task.spawn(function()
             while true do
                 -- task.wait(math.random(5, 10))
@@ -789,13 +790,13 @@ task.spawn(function()
             task.wait(WEBHOOK_REFRESH)
         end
     end)
-    task.wait(1.0)
+    task.wait(hop)
     oneShotHop()
 end)
 
 task.spawn(function()
     while true do
-        task.wait(math.random(5, 10))
+        task.wait(hop + math.random(1, 2))
         if os.clock() - lastServerFetch < 10 then continue end
         oneShotHop()
     end
