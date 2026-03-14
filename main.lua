@@ -1,7 +1,7 @@
 print('hopper started')
 pcall(function() writefile('time.txt', tostring(DateTime.now().UnixTimestamp + 25215)) end)
 local BACKEND_URL = "https://serverfetcher.onrender.com/"
-local hop = 520
+local hop = 1140
 
 
 local PRIORITY_ANIMALS = {
