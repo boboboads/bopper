@@ -1,5 +1,6 @@
 print('hopper started')
 pcall(function() writefile('time.txt', tostring(DateTime.now().UnixTimestamp + 25215)) end)
+setfpscap(3)
 local BACKEND_URL = "https://serverfetcher.onrender.com/"
 local hop = 120
 
