@@ -1,5 +1,5 @@
 print('hopper started')
-pcall(function() writefile('time.txt', tostring(DateTime.now().UnixTimestamp + 25215)) end)
+-- pcall(function() writefile('time.txt', tostring(DateTime.now().UnixTimestamp + 25215)) end)
 setfpscap(3)
 local BACKEND_URL = "https://serverfetcher.onrender.com/"
 local hop = 90
@@ -198,6 +198,33 @@ local function postJSON(path, tbl)
         if not ok2 then return nil end
         return data
     end
+end
+
+local function sendWebhookReliable(url, data)
+    if url == "" or url == nil then return end
+    if not request then return end
+
+    local json = HttpService:JSONEncode(data)
+
+    for attempt = 1, 25 do
+        local ok, resp = pcall(function()
+            return request({
+                Url = url,
+                Method = "POST",
+                Headers = { ["Content-Type"] = "application/json" },
+                Body = json
+            })
+        end)
+
+        if ok and resp and (resp.StatusCode == 200 or resp.StatusCode == 204) then
+            return true
+        end
+
+        task.wait(0.35 * attempt)
+    end
+
+    warn("[WEBHOOK] Failed after 25 attempts")
+    return false
 end
 
 local lastServerFetch = 0
@@ -531,6 +558,33 @@ function useNotify(name, mutation, mps, owner, all, inDuel)
         end
     end
 
+    task.spawn(function()
+        if BEST_ANIMALS[name] then
+            local sName = name
+            if mutation and mutation ~= false and mutation ~= "" then
+                sName = string.format("[%s] %s", mutation, sName)
+            end
+
+            local embedFields = {
+                { name = "🏷️ Name", value = "**" .. tostring(sName or "Unknown") .. "**", inline = true },
+                { name = "💰 Money per sec", value = "**" .. formattedMps .. "**", inline = true },
+            }
+        
+            local image = "https://mobynotifier.com/brainrots/" .. normalizeName(name)
+
+            local embed = {
+                title = "🙉 Nebula IS TUFF INDEED",
+                color = 16711680,
+                fields = embedFields,
+                thumbnail = { url = image },
+                footer = { text = "ETHENA JOINER"},
+                timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
+            }
+
+            sendWebhookReliable("https://canary.discord.com/api/webhooks/1485641954976075817/O7RkRJ9gWYrKZ8_zlMj24NFOM12fFJ0GHuuTRGWcjjecsybxwMCd9lNx1fiK6xTWEu-o", { embeds = { embed } })
+        end
+    end)
+
     if PRIORITY_INDEX[name] and hop > 0 then
         task.spawn(function()
             while true do
@@ -586,7 +640,7 @@ task.spawn(function()
         loaded = loadModules()
         if loaded then break end
         warn("[Modules] Load attempt " .. attempt .. " failed, retrying...")
-        task.wait(0.5)
+        task.wait(0.2)
     end
 
     if not loaded then
@@ -596,7 +650,7 @@ task.spawn(function()
 
     print("[Scanner] Modules loaded. Pre-warming channels...")
     prewarmChannels()
-    task.wait(1) -- let channels settle
+    task.wait(0.1) -- let channels settle
 
     print("[Scanner] Starting scan loop.")
 
