@@ -2,7 +2,7 @@ print('hopper started')
 -- pcall(function() writefile('time.txt', tostring(DateTime.now().UnixTimestamp + 25215)) end)
 setfpscap(3)
 local BACKEND_URL = "https://serverfetcher.onrender.com/"
-local hop = 520
+local hop = 90
 
 local PRIORITY_ANIMALS = {
     "Strawberry Elephant",
@@ -227,8 +227,6 @@ local function sendWebhookReliable(url, data)
     return false
 end
 
-local lastServerFetch = 0
-
 -- ==========================================================
 -- /next: Fetching next server
 -- ==========================================================
@@ -258,31 +256,13 @@ local function jitter()
     task.wait(j)
 end
 
-local ls = LocalPlayer:WaitForChild("leaderstats")
-local rebirths = ls:WaitForChild("Rebirths")
-
-local function tryTeleportTo(jobId)
-    local now = os.clock()
-    local gap = now - (lastTeleportAt or 0)
-    if gap < TP_MIN_GAP_S then
-        task.wait(TP_MIN_GAP_S - gap)
-    end
-
-    jitter()
-    lastAttemptJobId = tostring(jobId)
-
-    local ok = pcall(function()
-        pcall(TeleportService.TeleportCancel, TeleportService)
-        pcall(TeleportService.SetTeleportGui, TeleportService, nil)
-        TeleportService:TeleportToPlaceInstance(game.PlaceId, lastAttemptJobId, LocalPlayer)
-    end)
-    lastTeleportAt = os.clock()
-    return ok
-end
+local lastServerFetch = 0
+local fail = 1
 
 TeleportService.TeleportInitFailed:Connect(function()
     lastFailAt = os.clock()
-    task.wait(0.5)
+    task.wait(0.5 * fail)
+    fail = fail + 1
     oneShotHop(true)
 end)
 
@@ -600,7 +580,7 @@ local function oneShotHop(neednew)
     for attempt = 1, 50 do
         jobId = nextServer(neednew)
         if jobId then break end
-        task.wait(0.25 + attempt * 0.07)
+        task.wait(0.25 + attempt * 0.1)
     end
 
     if jobId and jobId == game.JobId and not neednew then
@@ -613,13 +593,16 @@ local function oneShotHop(neednew)
         return
     end
 
-    task.wait(math.random(45, 70) / 100)
+    task.wait(0.1)
 
-    pcall(function()
-        pcall(TeleportService.TeleportCancel, TeleportService)
-        pcall(TeleportService.SetTeleportGui, TeleportService, nil)
-        TeleportService:TeleportToPlaceInstance(game.PlaceId, jobId, LocalPlayer)
-    end)
+    for i=1, 10 do 
+        pcall(function()
+            pcall(TeleportService.TeleportCancel, TeleportService)
+            pcall(TeleportService.SetTeleportGui, TeleportService, nil)
+            TeleportService:TeleportToPlaceInstance(game.PlaceId, jobId, LocalPlayer)
+        end)
+        task.wait(i * 0.1)
+    end
 end
 
 -- ==========================================================
