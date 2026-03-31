@@ -280,14 +280,11 @@ local function tryTeleportTo(jobId)
     return ok
 end
 
--- TeleportService.TeleportInitFailed:Connect(function()
---     lastFailAt = os.clock()
---     task.wait(0.6)
---     if rebirths.Value > 0 then
---         local nextId = nextServer()
---         if nextId then tryTeleportTo(nextId) end
---     end
--- end)
+TeleportService.TeleportInitFailed:Connect(function()
+    lastFailAt = os.clock()
+    task.wait(0.5)
+    oneShotHop(true)
+end)
 
 -- ==========================================================
 -- Utility
