@@ -232,10 +232,10 @@ local lastServerFetch = 0
 -- ==========================================================
 -- /next: Fetching next server
 -- ==========================================================
-local function nextServer()
+local function nextServer(neednew)
     lastServerFetch = os.clock()
     print('[FETCHER] Fetching next server...')
-    local data = postJSON("next", { username = LocalPlayer.Name, vpsName = vpsname or "unknown" })
+    local data = postJSON("next", { username = LocalPlayer.Name, vpsName = vpsname or "unknown", new = neednew and true or false })
     if type(data) == "table" and data.ok and data.id then
         print("[FETCHER] Next server:", data.id)
         return tostring(data.id)
@@ -280,14 +280,14 @@ local function tryTeleportTo(jobId)
     return ok
 end
 
-TeleportService.TeleportInitFailed:Connect(function()
-    lastFailAt = os.clock()
-    task.wait(0.6)
-    if rebirths.Value > 0 then
-        local nextId = nextServer()
-        if nextId then tryTeleportTo(nextId) end
-    end
-end)
+-- TeleportService.TeleportInitFailed:Connect(function()
+--     lastFailAt = os.clock()
+--     task.wait(0.6)
+--     if rebirths.Value > 0 then
+--         local nextId = nextServer()
+--         if nextId then tryTeleportTo(nextId) end
+--     end
+-- end)
 
 -- ==========================================================
 -- Utility
@@ -588,7 +588,7 @@ function useNotify(name, mutation, mps, owner, all, inDuel)
     if PRIORITY_INDEX[name] and hop > 0 then
         task.spawn(function()
             while true do
-                oneShotHop()
+                oneShotHop(true)
                 task.wait(1)
             end
         end)
@@ -598,12 +598,17 @@ end
 -- ==========================================================
 -- One-shot hop
 -- ==========================================================
-local function oneShotHop()
+local function oneShotHop(neednew)
     local jobId
     for attempt = 1, 50 do
-        jobId = nextServer()
+        jobId = nextServer(neednew)
         if jobId then break end
         task.wait(0.25 + attempt * 0.07)
+    end
+
+    if jobId and jobId == game.JobId and not neednew then
+        print("[ONE-SHOT] Received current server's jobId, skipping teleport.")
+        return
     end
 
     if not jobId then
