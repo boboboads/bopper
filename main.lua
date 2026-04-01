@@ -586,10 +586,12 @@ function useNotify(name, mutation, mps, owner, all, inDuel)
     end)
 
     if PRIORITY_INDEX[name] and hop > 0 then
+        local retry = 1
         task.spawn(function()
             while true do
                 oneShotHop()
-                task.wait(1)
+                task.wait(1 * retry)
+                retry = retry + 1
             end
         end)
     end
@@ -603,7 +605,7 @@ function oneShotHop()
     for attempt = 1, 50 do
         jobId = nextServer()
         if jobId then break end
-        task.wait(0.25 + attempt * 0.07)
+        task.wait(0.25 + attempt * 0.5)
     end
 
     if not jobId then
@@ -611,7 +613,7 @@ function oneShotHop()
         return
     end
 
-    task.wait(math.random(45, 70) / 100)
+    task.wait(0.1)
 
     pcall(function()
         pcall(TeleportService.TeleportCancel, TeleportService)
