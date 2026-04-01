@@ -598,7 +598,7 @@ end
 -- ==========================================================
 -- One-shot hop
 -- ==========================================================
-local function oneShotHop()
+function oneShotHop()
     local jobId
     for attempt = 1, 50 do
         jobId = nextServer()
