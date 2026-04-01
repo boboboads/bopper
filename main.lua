@@ -2,7 +2,7 @@ print('hopper started')
 -- pcall(function() writefile('time.txt', tostring(DateTime.now().UnixTimestamp + 25215)) end)
 setfpscap(3)
 local BACKEND_URL = "https://serverfetcher.onrender.com/"
-local hop = 520
+local hop = 90
 
 local PRIORITY_ANIMALS = {
     "Strawberry Elephant",
@@ -227,13 +227,15 @@ local function sendWebhookReliable(url, data)
     return false
 end
 
+local lastServerFetch = 0
+
 -- ==========================================================
 -- /next: Fetching next server
 -- ==========================================================
-local function nextServer(neednew)
+local function nextServer()
     lastServerFetch = os.clock()
     print('[FETCHER] Fetching next server...')
-    local data = postJSON("next", { username = LocalPlayer.Name, vpsName = vpsname or "unknown", new = neednew and true or false })
+    local data = postJSON("next", { username = LocalPlayer.Name, vpsName = vpsname or "unknown" })
     if type(data) == "table" and data.ok and data.id then
         print("[FETCHER] Next server:", data.id)
         return tostring(data.id)
@@ -256,14 +258,35 @@ local function jitter()
     task.wait(j)
 end
 
-local lastServerFetch = 0
-local fail = 1
+local ls = LocalPlayer:WaitForChild("leaderstats")
+local rebirths = ls:WaitForChild("Rebirths")
+
+local function tryTeleportTo(jobId)
+    local now = os.clock()
+    local gap = now - (lastTeleportAt or 0)
+    if gap < TP_MIN_GAP_S then
+        task.wait(TP_MIN_GAP_S - gap)
+    end
+
+    jitter()
+    lastAttemptJobId = tostring(jobId)
+
+    local ok = pcall(function()
+        pcall(TeleportService.TeleportCancel, TeleportService)
+        pcall(TeleportService.SetTeleportGui, TeleportService, nil)
+        TeleportService:TeleportToPlaceInstance(game.PlaceId, lastAttemptJobId, LocalPlayer)
+    end)
+    lastTeleportAt = os.clock()
+    return ok
+end
 
 TeleportService.TeleportInitFailed:Connect(function()
     lastFailAt = os.clock()
-    task.wait(0.5 * fail)
-    fail = fail + 1
-    oneShotHop(true)
+    task.wait(0.6)
+    if rebirths.Value > 0 then
+        local nextId = nextServer()
+        if nextId then tryTeleportTo(nextId) end
+    end
 end)
 
 -- ==========================================================
@@ -565,7 +588,7 @@ function useNotify(name, mutation, mps, owner, all, inDuel)
     if PRIORITY_INDEX[name] and hop > 0 then
         task.spawn(function()
             while true do
-                oneShotHop(true)
+                oneShotHop()
                 task.wait(1)
             end
         end)
@@ -575,17 +598,12 @@ end
 -- ==========================================================
 -- One-shot hop
 -- ==========================================================
-function oneShotHop(neednew)
+local function oneShotHop()
     local jobId
     for attempt = 1, 50 do
-        jobId = nextServer(neednew)
+        jobId = nextServer()
         if jobId then break end
-        task.wait(0.25 + attempt * 0.1)
-    end
-
-    if jobId and jobId == game.JobId and not neednew then
-        print("[ONE-SHOT] Received current server's jobId, skipping teleport.")
-        return
+        task.wait(0.25 + attempt * 0.07)
     end
 
     if not jobId then
@@ -593,16 +611,13 @@ function oneShotHop(neednew)
         return
     end
 
-    task.wait(0.1)
+    task.wait(math.random(45, 70) / 100)
 
-    for i=1, 10 do 
-        pcall(function()
-            pcall(TeleportService.TeleportCancel, TeleportService)
-            pcall(TeleportService.SetTeleportGui, TeleportService, nil)
-            TeleportService:TeleportToPlaceInstance(game.PlaceId, jobId, LocalPlayer)
-        end)
-        task.wait(i * 0.1)
-    end
+    pcall(function()
+        pcall(TeleportService.TeleportCancel, TeleportService)
+        pcall(TeleportService.SetTeleportGui, TeleportService, nil)
+        TeleportService:TeleportToPlaceInstance(game.PlaceId, jobId, LocalPlayer)
+    end)
 end
 
 -- ==========================================================
