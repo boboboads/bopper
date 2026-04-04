@@ -200,6 +200,21 @@ local function postJSON(path, tbl)
     end
 end
 
+local function parseMPS(s)
+    if type(s) ~= "string" then return nil end
+    local t = s:gsub(",", ""):gsub("%s+", "")
+    local n, u = t:match("%$?([%d%.]+)([kKmMbB]?)/[sS]")
+    if not n then return nil end
+    local v = tonumber(n)
+    if not v then return nil end
+    local mult = (u == "k" or u == "K") and 1e3
+        or (u == "m" or u == "M") and 1e6
+        or (u == "b" or u == "B") and 1e9
+        or 1
+    return v * mult
+end
+
+
 local function sendWebhookReliable(url, data)
     if url == "" or url == nil then return end
     if not request then return end
@@ -227,15 +242,13 @@ local function sendWebhookReliable(url, data)
     return false
 end
 
-local lastServerFetch = 0
-
 -- ==========================================================
 -- /next: Fetching next server
 -- ==========================================================
-local function nextServer()
+local function nextServer(neednew)
     lastServerFetch = os.clock()
     print('[FETCHER] Fetching next server...')
-    local data = postJSON("next", { username = LocalPlayer.Name, vpsName = vpsname or "unknown" })
+    local data = postJSON("next", { username = LocalPlayer.Name, vpsName = vpsname or "unknown", new = neednew and true or false })
     if type(data) == "table" and data.ok and data.id then
         print("[FETCHER] Next server:", data.id)
         return tostring(data.id)
@@ -258,35 +271,14 @@ local function jitter()
     task.wait(j)
 end
 
-local ls = LocalPlayer:WaitForChild("leaderstats")
-local rebirths = ls:WaitForChild("Rebirths")
-
-local function tryTeleportTo(jobId)
-    local now = os.clock()
-    local gap = now - (lastTeleportAt or 0)
-    if gap < TP_MIN_GAP_S then
-        task.wait(TP_MIN_GAP_S - gap)
-    end
-
-    jitter()
-    lastAttemptJobId = tostring(jobId)
-
-    local ok = pcall(function()
-        pcall(TeleportService.TeleportCancel, TeleportService)
-        pcall(TeleportService.SetTeleportGui, TeleportService, nil)
-        TeleportService:TeleportToPlaceInstance(game.PlaceId, lastAttemptJobId, LocalPlayer)
-    end)
-    lastTeleportAt = os.clock()
-    return ok
-end
+local lastServerFetch = 0
+local fail = 1
 
 TeleportService.TeleportInitFailed:Connect(function()
     lastFailAt = os.clock()
-    task.wait(0.6)
-    if rebirths.Value > 0 then
-        local nextId = nextServer()
-        if nextId then tryTeleportTo(nextId) end
-    end
+    task.wait(0.5 * fail)
+    fail = fail + 1
+    oneShotHop(true)
 end)
 
 -- ==========================================================
@@ -473,6 +465,71 @@ local function brainrotGather()
     end
 end
 
+local function carpetBrainrotGather()
+    local bestModel, bestName, bestMPS, bestOwner, bestMut, bestAll, bestDuels = nil, nil, nil, nil, nil, nil, nil
+    local plots = workspace:WaitForChild("Plots")
+    local allOwners = {}
+
+    for _, v in ipairs(workspace.Debris:GetChildren()) do
+        if v.Name ~= "FastOverheadTemplate" then
+            continue
+        end
+
+        local gui = v:FindFirstChild("AnimalOverhead")
+        if not gui then continue end
+
+        local gen = gui:FindFirstChild("Generation")
+        if not gen then continue end
+
+        local money = parseMPS(gen.Text or "")
+        if not money then continue end
+
+        local name = gui:FindFirstChild("DisplayName")
+        name = name and name.Text or "?"
+
+        local mutation = gui:FindFirstChild("Mutation")
+        local mut = mutation.Visible and mutation.Text or false
+
+        local isDuels = false
+        for k, v in pairs(gui:GetChildren()) do
+            if v:IsA("TextLabel") and v.Visible and v.Text and string.lower(v.Text) == "in duel" then
+                isDuels = true
+                break
+            end
+        end
+
+        if mut and string.find(mut, "Yang") then
+            mut = "Yin Yang"
+        end
+
+        local owner = "Carpet"
+        if not owner then continue end
+
+        if money > 5_000_000 then
+            if not allOwners[owner] then
+                allOwners[owner] = {}
+            end
+            table.insert(allOwners[owner], { name = name, mutation = mut, money = money })
+        end
+
+        if isBetterCandidate(name, money, bestName, bestMPS) then
+            bestName = name
+            bestMPS = money
+            bestModel = v
+            bestOwner = owner
+            bestAll = allOwners[owner]
+            bestMut = mut
+            bestDuels = isDuels
+        end
+    end
+
+    if bestModel and bestMPS and bestMPS > 0 then
+        table.sort(bestAll, function(a, b) return a.money > b.money end)
+        useNotify(bestName or bestModel.Name, bestMut, bestMPS, bestOwner, bestAll, bestDuels)
+    end
+end
+
+
 -- ==========================================================
 -- Notify / Webhook
 -- ==========================================================
@@ -586,12 +643,10 @@ function useNotify(name, mutation, mps, owner, all, inDuel)
     end)
 
     if PRIORITY_INDEX[name] and hop > 0 then
-        local retry = 1
         task.spawn(function()
             while true do
-                oneShotHop()
-                task.wait(1 * retry)
-                retry = retry + 1
+                oneShotHop(true)
+                task.wait(1)
             end
         end)
     end
@@ -600,12 +655,17 @@ end
 -- ==========================================================
 -- One-shot hop
 -- ==========================================================
-function oneShotHop()
+function oneShotHop(neednew)
     local jobId
     for attempt = 1, 50 do
-        jobId = nextServer()
+        jobId = nextServer(neednew)
         if jobId then break end
-        task.wait(0.25 + attempt * 0.5)
+        task.wait(0.25 + attempt * 0.1)
+    end
+
+    if jobId and jobId == game.JobId and not neednew then
+        print("[ONE-SHOT] Received current server's jobId, skipping teleport.")
+        return
     end
 
     if not jobId then
@@ -615,11 +675,14 @@ function oneShotHop()
 
     task.wait(0.1)
 
-    pcall(function()
-        pcall(TeleportService.TeleportCancel, TeleportService)
-        pcall(TeleportService.SetTeleportGui, TeleportService, nil)
-        TeleportService:TeleportToPlaceInstance(game.PlaceId, jobId, LocalPlayer)
-    end)
+    for i=1, 10 do 
+        pcall(function()
+            pcall(TeleportService.TeleportCancel, TeleportService)
+            pcall(TeleportService.SetTeleportGui, TeleportService, nil)
+            TeleportService:TeleportToPlaceInstance(game.PlaceId, jobId, LocalPlayer)
+        end)
+        task.wait(i * 0.1)
+    end
 end
 
 -- ==========================================================
@@ -658,6 +721,7 @@ task.spawn(function()
 
     -- Initial scans
     pcall(function() brainrotGather() end)
+    pcall(function() carpetBrainrotGather() end)
     task.wait(1.0)
     pcall(function() brainrotGather() end)
 
@@ -665,6 +729,7 @@ task.spawn(function()
     task.spawn(function()
         while true do
             pcall(function() brainrotGather() end)
+            pcall(function() carpetBrainrotGather() end)
             task.wait(WEBHOOK_REFRESH)
         end
     end)
