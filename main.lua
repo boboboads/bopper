@@ -214,6 +214,43 @@ local function parseMPS(s)
     return v * mult
 end
 
+local function isPointInsideModel(model, worldPoint)
+    local cf, size = model:GetBoundingBox()
+
+    -- convert point to model space
+    local localPoint = cf:PointToObjectSpace(worldPoint)
+
+    local half = size * 0.5
+
+    return math.abs(localPoint.X) <= half.X
+       and math.abs(localPoint.Y) <= half.Y
+       and math.abs(localPoint.Z) <= half.Z
+end
+
+local function getBrainrotOwner(m)
+    local plots = workspace:FindFirstChild("Plots")
+    if not plots then return "Carpet" end
+    
+    local foundPlot = nil
+    for _, plot in pairs(plots:GetChildren()) do
+        if isPointInsideModel(plot, m.Position) then
+            foundPlot = plot
+            break
+        end
+    end
+    if not foundPlot then return "Carpet" end
+    local plotSign = foundPlot:FindFirstChild("PlotSign")
+    if not plotSign then return "Carpet" end
+
+    local surface = plotSign:FindFirstChild("SurfaceGui")
+    if not surface then return "Carpet" end
+
+    local frame = surface:FindFirstChildOfClass("Frame")
+    local label = frame and frame:FindFirstChildOfClass("TextLabel")
+    local owner = label and label.Text:match("([^']+)") or "Carpet"
+    return owner
+end
+
 local function sendWebhookReliable(url, data)
     if url == "" or url == nil then return end
     if not request then return end
@@ -524,7 +561,7 @@ local function carpetBrainrotGather()
             mut = "Yin Yang"
         end
 
-        local owner = "Carpet"
+        local owner = getBrainrotOwner(v)
         if not owner then continue end
 
         if money > 5_000_000 then
