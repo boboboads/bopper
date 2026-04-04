@@ -563,6 +563,7 @@ local function carpetBrainrotGather()
 
         local owner = getBrainrotOwner(v)
         if not owner then continue end
+        if owner ~= "Carpet" then continue end
 
         if money > 5_000_000 then
             if not allOwners[owner] then
