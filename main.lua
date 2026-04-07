@@ -8,16 +8,20 @@ local PRIORITY_ANIMALS = {
     "Strawberry Elephant",
     "Headless Horseman",
     "Meowl",
+    "Signore Carapace",
     "Skibidi Toilet",
+    "Griffin",
+    "Love Love Bear",
+    "Antonio",
     "Dragon Gingerini",
     "Dragon Cannelloni",
     "La Supreme Combinasion",
     "Celestial Pegasus",
     "Rosey and Teddy",
+    "Hydra Bunny",
     "Hydra Dragon Cannelloni",
     "Cerberus",
     "Ketupat Bros",
-    "Griffin",
     "Capitano Moby",
     "Cooki and Milki",
     "Popcuru and Fizzuru",
@@ -41,7 +45,7 @@ local PRIORITY_ANIMALS = {
     "Ketupat Kepat",
     "La Taco Combinasion",
     "Tang Tang Keletang",
-    "W or L",
+    "W or L"
 }
 
 local BEST_ANIMALS = {
