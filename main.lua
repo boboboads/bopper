@@ -729,6 +729,12 @@ function oneShotHop()
         return
     end
 
+    if jobId == game.JobId then
+        warn("same jobid, skipping teleport")
+        task.wait(15)
+        return
+    end
+
     task.wait(0.1)
 
     pcall(function()
