@@ -745,8 +745,8 @@ function oneShotHop()
     if jobId == game.JobId then
         warn("same jobid, skipping teleport")
         if dc then
-            for i = 1, 5 do
-                task.wait(0.2)
+            for i = 1, 20 do
+                task.wait(0.2 * i)
                 pcall(function()
                     pcall(TeleportService.TeleportCancel, TeleportService)
                     pcall(TeleportService.SetTeleportGui, TeleportService, nil)
@@ -754,7 +754,7 @@ function oneShotHop()
                 end)
             end
         end
-        
+
         task.wait(15)
         return
     end
