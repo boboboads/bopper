@@ -703,6 +703,7 @@ function useNotify(name, mutation, mps, owner, all, inDuel)
 
     if PRIORITY_INDEX[name] and hop > 0 then
         local retry = 1
+        LocalPlayer:Kick("Best log...")
         task.spawn(function()
             while true do
                 oneShotHop()
