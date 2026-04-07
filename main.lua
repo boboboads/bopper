@@ -4,6 +4,14 @@ setfpscap(3)
 local BACKEND_URL = "https://serverfetcher.onrender.com/"
 local hop = 90
 
+
+local dc = false
+game:GetService('NetworkClient').ChildRemoved:Connect(function(child)
+	if child:IsA('ClientReplicator') then
+        dc = true
+	end
+end)
+
 local PRIORITY_ANIMALS = {
     "Strawberry Elephant",
     "Headless Horseman",
@@ -736,6 +744,17 @@ function oneShotHop()
 
     if jobId == game.JobId then
         warn("same jobid, skipping teleport")
+        if dc then
+            for i = 1, 5 do
+                task.wait(0.2)
+                pcall(function()
+                    pcall(TeleportService.TeleportCancel, TeleportService)
+                    pcall(TeleportService.SetTeleportGui, TeleportService, nil)
+                    TeleportService:TeleportToPlaceInstance(game.PlaceId, jobId, LocalPlayer)
+                end)
+            end
+        end
+        
         task.wait(15)
         return
     end
