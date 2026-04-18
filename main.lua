@@ -126,7 +126,7 @@ end
 -- ==========================================================
 -- Load modules
 -- ==========================================================
-local Synchronizer, AnimalsData, AnimalsShared, NumberUtils
+local Synchronizer, AnimalsData, AnimalsShared
 
 local function loadModules()
     local ok = pcall(function()
@@ -138,7 +138,6 @@ local function loadModules()
         Synchronizer  = require(Packages:WaitForChild("Synchronizer"))
         AnimalsData   = require(Datas:WaitForChild("Animals"))
         AnimalsShared = require(Shared:WaitForChild("Animals"))
-        NumberUtils   = require(Utils:WaitForChild("NumberUtils"))
     end)
     return ok
 end
