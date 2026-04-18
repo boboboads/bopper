@@ -27,6 +27,7 @@ local PRIORITY_ANIMALS = {
     "Antonio",
     "Pancake and Syrup",
     "Tirilikalika Tirilikalako",
+	"Globa Steppa",
     "Celestial Pegasus",
     "Rosey and Teddy",
     "Hydra Bunny",
