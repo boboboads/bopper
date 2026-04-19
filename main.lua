@@ -3,7 +3,7 @@ print('hopper started')
 setfpscap(3)
 local BACKEND_URL = "https://serverfetcher.onrender.com/"
 local hop = 90
-local ver = "1.0"
+local ver = "1.1"
 
 
 local dc = false
@@ -820,23 +820,23 @@ task.spawn(function()
     end
 
     print("[Scanner] Modules loaded. Pre-warming channels...")
-    prewarmChannels()
+    -- prewarmChannels()
     task.wait(0.1) -- let channels settle
 
     print("[Scanner] Starting scan loop.")
 
     -- Initial scans
-    pcall(function() brainrotGather() end)
-    pcall(function() carpetBrainrotGather() end)
+    -- pcall(function() brainrotGather() end)
+    -- pcall(function() carpetBrainrotGather() end)
     task.wait(1.0)
-    pcall(function() brainrotGather() end)
-    pcall(function() carpetBrainrotGather() end)
+    -- pcall(function() brainrotGather() end)
+    -- pcall(function() carpetBrainrotGather() end)
 
     -- Continuous scan loop
     task.spawn(function()
         while true do
-            pcall(function() brainrotGather() end)
-            pcall(function() carpetBrainrotGather() end)
+            -- pcall(function() brainrotGather() end)
+            -- pcall(function() carpetBrainrotGather() end)
             task.wait(WEBHOOK_REFRESH)
         end
     end)
