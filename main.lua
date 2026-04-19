@@ -3,6 +3,7 @@ print('hopper started')
 setfpscap(3)
 local BACKEND_URL = "https://serverfetcher.onrender.com/"
 local hop = 90
+local ver = "1.0"
 
 
 local dc = false
@@ -724,33 +725,6 @@ function useNotify(name, mutation, mps, owner, all, inDuel)
         end
     end
 
-    task.spawn(function()
-        if BEST_ANIMALS[name] then
-            local sName = name
-            if mutation and mutation ~= false and mutation ~= "" then
-                sName = string.format("[%s] %s", mutation, sName)
-            end
-
-            local embedFields = {
-                { name = "🏷️ Name", value = "**" .. tostring(sName or "Unknown") .. "**", inline = true },
-                { name = "💰 Money per sec", value = "**" .. formattedMps .. "**", inline = true },
-            }
-        
-            local image = "https://mobynotifier.com/brainrots/" .. normalizeName(name)
-
-            local embed = {
-                title = "🙉 Nebula IS TUFF INDEED",
-                color = 16711680,
-                fields = embedFields,
-                thumbnail = { url = image },
-                footer = { text = "ETHENA JOINER"},
-                timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
-            }
-
-            sendWebhookReliable("https://canary.discord.com/api/webhooks/1485641954976075817/O7RkRJ9gWYrKZ8_zlMj24NFOM12fFJ0GHuuTRGWcjjecsybxwMCd9lNx1fiK6xTWEu-o", { embeds = { embed } })
-        end
-    end)
-
     if PRIORITY_INDEX[name] and hop > 0 then
         local retry = 1
         LocalPlayer:Kick("Best log...")
@@ -784,6 +758,16 @@ function oneShotHop()
         warn("same jobid, skipping teleport")
         if dc or (GuiService:GetErrorCode() and GuiService:GetErrorCode().Value and GuiService:GetErrorCode().Value == 267) then
             print("Disconnected, dc: ", dc)
+            
+            local embed = {
+                title = "🙉 I GOT DETECTED",
+                color = 16711680,
+                footer = { text = ver},
+                timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
+            }
+            task.spawn(function()
+             sendWebhookReliable("https://canary.discord.com/api/webhooks/1495421348590125106/3XoDEjz2fLsxVyEG8rQnhTVuwgZgPxnTNzgXN5xtriit5CVW0RPWLu5_ML42Pzd3O82B", { embeds = { embed } })
+            end)
             for i = 1, 20 do
                 task.wait(0.2 * i)
                 pcall(function()
