@@ -122,6 +122,36 @@ do
     end)
 end
 
+do
+    local Sync = require(game.ReplicatedStorage:WaitForChild("Packages"):WaitForChild("Synchronizer"))
+
+    for name, fn in pairs(Sync) do
+        if typeof(fn) ~= "function" then continue end
+        if isexecutorclosure(fn) then continue end
+
+        local ok, ups = pcall(debug.getupvalues, fn)
+        if not ok then continue end
+
+        for idx, val in pairs(ups) do
+            if typeof(val) == "function" and not isexecutorclosure(val) then
+                local ok2, innerUps = pcall(debug.getupvalues, val)
+                if ok2 then
+                    local hasBoolean = false
+                    for _, v in pairs(innerUps) do
+                        if typeof(v) == "boolean" then
+                            hasBoolean = true
+                            break
+                        end
+                    end
+                    if hasBoolean then
+                        debug.setupvalue(fn, idx, newcclosure(function() end))
+                    end
+                end
+            end
+        end
+    end
+end
+
 -- ==========================================================
 -- Load modules
 -- ==========================================================
@@ -416,28 +446,10 @@ local channelCache = {}  -- plotName -> channel
 
 local function getChannel(plotName)
     if channelCache[plotName] then return channelCache[plotName] end
-
-    local ch
-    local retries = 0
-    local maxRetries = 10
-    
-    while not ch and retries < maxRetries do
-        local success, result = pcall(function()
-            return Synchronizer:GetAllChannels()[plotName]
-        end)
-        if success and result then
-            ch = result
-            break
-        else
-            retries = retries + 1
-            if retries < maxRetries then
-                task.wait(0.1)
-            end
-        end
-    end
-
+    local ok, ch = pcall(function()
+        return Synchronizer:Wait(plotName)
+    end)
     if ok and ch then
-        print("Found channel for plot:", plotName)
         channelCache[plotName] = ch
         return ch
     end
@@ -519,8 +531,6 @@ local function brainrotGather()
             if mutation and string.find(mutation, "Yang") then
                 mutation = "Yin Yang"
             end
-
-            print(displayName)
 
             local traits = slotData.Traits or {}
             local genValue = getGenValue(slotData.Index, mutation, traits)
