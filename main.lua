@@ -3,7 +3,7 @@ print('hopper started')
 setfpscap(3)
 local BACKEND_URL = "https://serverfetcher.onrender.com/"
 local hop = 90
-local ver = "1.6"
+local ver = "1.7"
 
 
 local dc = false
@@ -161,16 +161,16 @@ end)
 -- ==========================================================
 -- Anti AFK
 -- ==========================================================
-task.spawn(function()
-    while not Players.LocalPlayer do task.wait() end
-    local vu = game:GetService("VirtualUser")
-    Players.LocalPlayer.Idled:Connect(function()
-        pcall(function()
-            vu:CaptureController()
-            vu:ClickButton2(Vector2.new())
-        end)
-    end)
-end)
+-- task.spawn(function()
+--     while not Players.LocalPlayer do task.wait() end
+--     local vu = game:GetService("VirtualUser")
+--     Players.LocalPlayer.Idled:Connect(function()
+--         pcall(function()
+--             vu:CaptureController()
+--             vu:ClickButton2(Vector2.new())
+--         end)
+--     end)
+-- end)
 
 -- ==========================================================
 -- HTTP helper
