@@ -806,10 +806,10 @@ task.spawn(function()
     oneShotHop()
 end)
 
--- task.spawn(function()
---     while true do
---         task.wait(hop + 5)
---         if os.clock() - lastServerFetch < 10 then continue end
---         oneShotHop()
---     end
--- end)
+task.spawn(function()
+    while true do
+        task.wait(hop + 5)
+        if os.clock() - lastServerFetch < 10 then continue end
+        oneShotHop()
+    end
+end)
