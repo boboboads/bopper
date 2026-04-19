@@ -437,6 +437,7 @@ local function getChannel(plotName)
     end
 
     if ok and ch then
+        print("Found channel for plot:", plotName)
         channelCache[plotName] = ch
         return ch
     end
