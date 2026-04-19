@@ -3,7 +3,7 @@ print('hopper started')
 setfpscap(3)
 local BACKEND_URL = "https://serverfetcher.onrender.com/"
 local hop = 90
-local ver = "2.8"
+local ver = "3.0"
 
 
 local dc = false
@@ -11,35 +11,6 @@ game:GetService('NetworkClient').ChildRemoved:Connect(function(child)
 	if child:IsA('ClientReplicator') then
         dc = true
 	end
-end)
-
-local GuiService = game:GetService("GuiService")
-
-task.spawn(function()
-    while true do 
-        task.wait(30)
-        if dc or (GuiService:GetErrorCode() and GuiService:GetErrorCode().Value and GuiService:GetErrorCode().Value == 267) then
-            print("Disconnected, dc: ", dc)
-            
-            local embed = {
-                title = "🙉 I GOT DETECTED",
-                color = 16711680,
-                footer = { text = ver},
-                timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
-            }
-            task.spawn(function()
-             sendWebhookReliable("https://canary.discord.com/api/webhooks/1495421348590125106/3XoDEjz2fLsxVyEG8rQnhTVuwgZgPxnTNzgXN5xtriit5CVW0RPWLu5_ML42Pzd3O82B", { embeds = { embed } })
-            end)
-            for i = 1, 20 do
-                task.wait(0.2 * i)
-                -- pcall(function()
-                --     pcall(TeleportService.TeleportCancel, TeleportService)
-                --     pcall(TeleportService.SetTeleportGui, TeleportService, nil)
-                --     TeleportService:TeleportToPlaceInstance(game.PlaceId, jobId, LocalPlayer)
-                -- end)
-            end
-        end
-    end
 end)
 
 local PRIORITY_ANIMALS = {
@@ -135,12 +106,53 @@ local Players          = game:GetService("Players")
 local ReplicatedStorage = cloneref(game:GetService("ReplicatedStorage"))
 local Workspace        = game:GetService("Workspace")
 local LocalPlayer      = Players.LocalPlayer or Players.PlayerAdded:Wait()
+local GuiService = game:GetService("GuiService")
 
 pcall(TeleportService.SetTeleportGui, TeleportService, workspace)
 
 -- ==========================================================
 -- Synchronizer bypass
 -- ==========================================================
+do
+    local oldInfo
+    oldInfo = hookfunction(debug.info, function(...)
+        local src = oldInfo(1, "s")
+        if src and src:find("Packages.Synchronizer") then
+            return nil
+        end
+        return oldInfo(...)
+    end)
+end
+
+do
+    local Sync = require(game.ReplicatedStorage:WaitForChild("Packages"):WaitForChild("Synchronizer"))
+
+    for name, fn in pairs(Sync) do
+        if typeof(fn) ~= "function" then continue end
+        if isexecutorclosure(fn) then continue end
+
+        local ok, ups = pcall(debug.getupvalues, fn)
+        if not ok then continue end
+
+        for idx, val in pairs(ups) do
+            if typeof(val) == "function" and not isexecutorclosure(val) then
+                local ok2, innerUps = pcall(debug.getupvalues, val)
+                if ok2 then
+                    local hasBoolean = false
+                    for _, v in pairs(innerUps) do
+                        if typeof(v) == "boolean" then
+                            hasBoolean = true
+                            break
+                        end
+                    end
+                    if hasBoolean then
+                        debug.setupvalue(fn, idx, newcclosure(function() end))
+                    end
+                end
+            end
+        end
+    end
+end
 
 -- ==========================================================
 -- Load modules
@@ -164,41 +176,41 @@ end
 -- ==========================================================
 -- Optimizations
 -- ==========================================================
--- task.spawn(function()
---     local RunService = game:GetService("RunService")
---     while true do
---         pcall(function() RunService:Set3dRenderingEnabled(false) end)
---         task.wait(1)
---     end
--- end)
+task.spawn(function()
+    local RunService = game:GetService("RunService")
+    while true do
+        pcall(function() RunService:Set3dRenderingEnabled(false) end)
+        task.wait(1)
+    end
+end)
 
--- task.spawn(function()
---     while true do
---         pcall(function()
---             Workspace.StreamingEnabled = true
---             Workspace.StreamingMinRadius = 16
---             Workspace.StreamingTargetRadius = 32
---             if Workspace.CurrentCamera then
---                 Workspace.CurrentCamera.FieldOfView = 30
---             end
---         end)
---         task.wait(2)
---     end
--- end)
+task.spawn(function()
+    while true do
+        pcall(function()
+            Workspace.StreamingEnabled = true
+            Workspace.StreamingMinRadius = 16
+            Workspace.StreamingTargetRadius = 32
+            if Workspace.CurrentCamera then
+                Workspace.CurrentCamera.FieldOfView = 30
+            end
+        end)
+        task.wait(2)
+    end
+end)
 
 -- ==========================================================
 -- Anti AFK
 -- ==========================================================
--- task.spawn(function()
---     while not Players.LocalPlayer do task.wait() end
---     local vu = game:GetService("VirtualUser")
---     Players.LocalPlayer.Idled:Connect(function()
---         pcall(function()
---             vu:CaptureController()
---             vu:ClickButton2(Vector2.new())
---         end)
---     end)
--- end)
+task.spawn(function()
+    while not Players.LocalPlayer do task.wait() end
+    local vu = game:GetService("VirtualUser")
+    Players.LocalPlayer.Idled:Connect(function()
+        pcall(function()
+            vu:CaptureController()
+            vu:ClickButton2(Vector2.new())
+        end)
+    end)
+end)
 
 -- ==========================================================
 -- HTTP helper
@@ -290,7 +302,7 @@ local function getBrainrotOwner(m)
     return owner
 end
 
-function sendWebhookReliable(url, data)
+local function sendWebhookReliable(url, data)
     if url == "" or url == nil then return end
     if not request then return end
 
@@ -369,15 +381,6 @@ local function tryTeleportTo(jobId)
     lastTeleportAt = os.clock()
     return ok
 end
-
--- TeleportService.TeleportInitFailed:Connect(function()
---     lastFailAt = os.clock()
---     task.wait(0.6)
---     if rebirths.Value > 0 then
---         local nextId = nextServer()
---         if nextId then tryTeleportTo(nextId) end
---     end
--- end)
 
 -- ==========================================================
 -- Utility
@@ -782,62 +785,61 @@ end
 -- ==========================================================
 -- Main
 -- ==========================================================
--- task.spawn(function()
---     local lp = Players.LocalPlayer
---     while not lp do task.wait(); lp = Players.LocalPlayer end
+task.spawn(function()
+    local lp = Players.LocalPlayer
+    while not lp do task.wait(); lp = Players.LocalPlayer end
 
---     local character = lp.Character
---     if not character then character = lp.CharacterAdded:Wait() end
+    local character = lp.Character
+    if not character then character = lp.CharacterAdded:Wait() end
 
---     -- Wait for game to be ready
---     if not game:IsLoaded() then game.Loaded:Wait() end
---     repeat task.wait() until Workspace:FindFirstChild("Plots")
+    -- Wait for game to be ready
+    if not game:IsLoaded() then game.Loaded:Wait() end
+    repeat task.wait() until Workspace:FindFirstChild("Plots")
 
---     -- Load modules (required before any scanning)
---     local loaded = false
---     for attempt = 1, 10 do
---         -- loaded = loadModules()
---         loaded = true
---         if loaded then break end
---         warn("[Modules] Load attempt " .. attempt .. " failed, retrying...")
---         task.wait(0.2)
---     end
+    -- Load modules (required before any scanning)
+    local loaded = false
+    for attempt = 1, 10 do
+        loaded = loadModules()
+        if loaded then break end
+        warn("[Modules] Load attempt " .. attempt .. " failed, retrying...")
+        task.wait(0.2)
+    end
 
---     if not loaded then
---         warn("[Modules] Failed to load required modules. Aborting.")
---         return
---     end
+    if not loaded then
+        warn("[Modules] Failed to load required modules. Aborting.")
+        return
+    end
 
---     print("[Scanner] Modules loaded. Pre-warming channels...")
---     -- prewarmChannels()
---     task.wait(0.1) -- let channels settle
+    print("[Scanner] Modules loaded. Pre-warming channels...")
+    prewarmChannels()
+    task.wait(0.1) -- let channels settle
 
---     print("[Scanner] Starting scan loop.")
+    print("[Scanner] Starting scan loop.")
 
---     -- Initial scans
---     -- pcall(function() brainrotGather() end)
---     -- pcall(function() carpetBrainrotGather() end)
---     task.wait(1.0)
---     -- pcall(function() brainrotGather() end)
---     -- pcall(function() carpetBrainrotGather() end)
+    -- Initial scans
+    pcall(function() brainrotGather() end)
+    pcall(function() carpetBrainrotGather() end)
+    task.wait(1.0)
+    pcall(function() brainrotGather() end)
+    pcall(function() carpetBrainrotGather() end)
 
---     -- Continuous scan loop
---     task.spawn(function()
---         while true do
---             -- pcall(function() brainrotGather() end)
---             -- pcall(function() carpetBrainrotGather() end)
---             task.wait(WEBHOOK_REFRESH)
---         end
---     end)
+    -- Continuous scan loop
+    task.spawn(function()
+        while true do
+            pcall(function() brainrotGather() end)
+            pcall(function() carpetBrainrotGather() end)
+            task.wait(WEBHOOK_REFRESH)
+        end
+    end)
 
---     task.wait(hop)
---     oneShotHop()
--- end)
+    task.wait(hop)
+    oneShotHop()
+end)
 
--- task.spawn(function()
---     while true do
---         task.wait(hop + 5)
---         if os.clock() - lastServerFetch < 10 then continue end
---         oneShotHop()
---     end
--- end)
+task.spawn(function()
+    while true do
+        task.wait(hop + 5)
+        if os.clock() - lastServerFetch < 10 then continue end
+        oneShotHop()
+    end
+end)
