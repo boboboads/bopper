@@ -3,7 +3,7 @@ print('hopper started')
 setfpscap(3)
 local BACKEND_URL = "https://serverfetcher.onrender.com/"
 local hop = 90
-local ver = "2.0"
+local ver = "2.1"
 
 
 local dc = false
@@ -136,27 +136,27 @@ end
 -- ==========================================================
 -- Optimizations
 -- ==========================================================
--- task.spawn(function()
---     local RunService = game:GetService("RunService")
---     while true do
---         pcall(function() RunService:Set3dRenderingEnabled(false) end)
---         task.wait(1)
---     end
--- end)
+task.spawn(function()
+    local RunService = game:GetService("RunService")
+    while true do
+        pcall(function() RunService:Set3dRenderingEnabled(false) end)
+        task.wait(1)
+    end
+end)
 
--- task.spawn(function()
---     while true do
---         pcall(function()
---             Workspace.StreamingEnabled = true
---             Workspace.StreamingMinRadius = 16
---             Workspace.StreamingTargetRadius = 32
---             if Workspace.CurrentCamera then
---                 Workspace.CurrentCamera.FieldOfView = 30
---             end
---         end)
---         task.wait(2)
---     end
--- end)
+task.spawn(function()
+    while true do
+        pcall(function()
+            Workspace.StreamingEnabled = true
+            Workspace.StreamingMinRadius = 16
+            Workspace.StreamingTargetRadius = 32
+            if Workspace.CurrentCamera then
+                Workspace.CurrentCamera.FieldOfView = 30
+            end
+        end)
+        task.wait(2)
+    end
+end)
 
 -- ==========================================================
 -- Anti AFK
