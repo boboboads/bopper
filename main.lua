@@ -811,10 +811,10 @@ task.spawn(function()
     print("[Scanner] Starting scan loop.")
 
     -- Initial scans
-    pcall(function() brainrotGather() end)
+    --pcall(function() brainrotGather() end)
     --pcall(function() carpetBrainrotGather() end)
     task.wait(1.0)
-    pcall(function() brainrotGather() end)
+    --pcall(function() brainrotGather() end)
     --pcall(function() carpetBrainrotGather() end)
 
     -- Continuous scan loop
@@ -822,7 +822,7 @@ task.spawn(function()
         while true do
             pcall(function() brainrotGather() end)
             --pcall(function() carpetBrainrotGather() end)
-            task.wait(WEBHOOK_REFRESH)
+            --task.wait(WEBHOOK_REFRESH)
         end
     end)
 
