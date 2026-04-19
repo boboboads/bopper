@@ -3,7 +3,7 @@ print('hopper started')
 setfpscap(3)
 local BACKEND_URL = "https://serverfetcher.onrender.com/"
 local hop = 90
-local ver = "1.4"
+local ver = "1.5"
 
 
 local dc = false
@@ -113,16 +113,6 @@ pcall(TeleportService.SetTeleportGui, TeleportService, workspace)
 -- ==========================================================
 -- Synchronizer bypass
 -- ==========================================================
-do
-    local oldInfo
-    oldInfo = hookfunction(debug.info, function(...)
-        local src = oldInfo(1, "s")
-        if src and src:find("Packages.Synchronizer") then
-            return nil
-        end
-        return oldInfo(...)
-    end)
-end
 
 -- ==========================================================
 -- Load modules
