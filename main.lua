@@ -3,7 +3,7 @@ print('hopper started')
 setfpscap(3)
 local BACKEND_URL = "https://serverfetcher.onrender.com/"
 local hop = 90
-local ver = "1.9"
+local ver = "2.0"
 
 
 local dc = false
@@ -754,57 +754,57 @@ end
 -- ==========================================================
 -- Main
 -- ==========================================================
--- task.spawn(function()
---     local lp = Players.LocalPlayer
---     while not lp do task.wait(); lp = Players.LocalPlayer end
+task.spawn(function()
+    local lp = Players.LocalPlayer
+    while not lp do task.wait(); lp = Players.LocalPlayer end
 
---     local character = lp.Character
---     if not character then character = lp.CharacterAdded:Wait() end
+    local character = lp.Character
+    if not character then character = lp.CharacterAdded:Wait() end
 
---     -- Wait for game to be ready
---     if not game:IsLoaded() then game.Loaded:Wait() end
---     repeat task.wait() until Workspace:FindFirstChild("Plots")
+    -- Wait for game to be ready
+    if not game:IsLoaded() then game.Loaded:Wait() end
+    repeat task.wait() until Workspace:FindFirstChild("Plots")
 
---     -- Load modules (required before any scanning)
---     local loaded = false
---     for attempt = 1, 10 do
---         -- loaded = loadModules()
---         loaded = true
---         if loaded then break end
---         warn("[Modules] Load attempt " .. attempt .. " failed, retrying...")
---         task.wait(0.2)
---     end
+    -- Load modules (required before any scanning)
+    local loaded = false
+    for attempt = 1, 10 do
+        -- loaded = loadModules()
+        loaded = true
+        if loaded then break end
+        warn("[Modules] Load attempt " .. attempt .. " failed, retrying...")
+        task.wait(0.2)
+    end
 
---     if not loaded then
---         warn("[Modules] Failed to load required modules. Aborting.")
---         return
---     end
+    if not loaded then
+        warn("[Modules] Failed to load required modules. Aborting.")
+        return
+    end
 
---     print("[Scanner] Modules loaded. Pre-warming channels...")
---     -- prewarmChannels()
---     task.wait(0.1) -- let channels settle
+    print("[Scanner] Modules loaded. Pre-warming channels...")
+    -- prewarmChannels()
+    task.wait(0.1) -- let channels settle
 
---     print("[Scanner] Starting scan loop.")
+    print("[Scanner] Starting scan loop.")
 
---     -- Initial scans
---     -- pcall(function() brainrotGather() end)
---     -- pcall(function() carpetBrainrotGather() end)
---     task.wait(1.0)
---     -- pcall(function() brainrotGather() end)
---     -- pcall(function() carpetBrainrotGather() end)
+    -- Initial scans
+    -- pcall(function() brainrotGather() end)
+    -- pcall(function() carpetBrainrotGather() end)
+    task.wait(1.0)
+    -- pcall(function() brainrotGather() end)
+    -- pcall(function() carpetBrainrotGather() end)
 
---     -- Continuous scan loop
---     task.spawn(function()
---         while true do
---             -- pcall(function() brainrotGather() end)
---             -- pcall(function() carpetBrainrotGather() end)
---             task.wait(WEBHOOK_REFRESH)
---         end
---     end)
+    -- Continuous scan loop
+    task.spawn(function()
+        while true do
+            -- pcall(function() brainrotGather() end)
+            -- pcall(function() carpetBrainrotGather() end)
+            task.wait(WEBHOOK_REFRESH)
+        end
+    end)
 
---     task.wait(hop)
---     oneShotHop()
--- end)
+    task.wait(hop)
+    oneShotHop()
+end)
 
 -- task.spawn(function()
 --     while true do
