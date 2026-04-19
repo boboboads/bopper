@@ -3,7 +3,7 @@ print('hopper started')
 setfpscap(3)
 local BACKEND_URL = "https://serverfetcher.onrender.com/"
 local hop = 90
-local ver = "2.6"
+local ver = "2.8"
 
 
 local dc = false
@@ -370,14 +370,14 @@ local function tryTeleportTo(jobId)
     return ok
 end
 
-TeleportService.TeleportInitFailed:Connect(function()
-    lastFailAt = os.clock()
-    task.wait(0.6)
-    if rebirths.Value > 0 then
-        local nextId = nextServer()
-        if nextId then tryTeleportTo(nextId) end
-    end
-end)
+-- TeleportService.TeleportInitFailed:Connect(function()
+--     lastFailAt = os.clock()
+--     task.wait(0.6)
+--     if rebirths.Value > 0 then
+--         local nextId = nextServer()
+--         if nextId then tryTeleportTo(nextId) end
+--     end
+-- end)
 
 -- ==========================================================
 -- Utility
