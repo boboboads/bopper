@@ -3,7 +3,7 @@ print('hopper started')
 setfpscap(3)
 local BACKEND_URL = "https://serverfetcher.onrender.com/"
 local hop = 90
-local ver = "2.3"
+local ver = "2.4"
 
 
 local dc = false
@@ -32,11 +32,11 @@ task.spawn(function()
             end)
             for i = 1, 20 do
                 task.wait(0.2 * i)
-                pcall(function()
-                    pcall(TeleportService.TeleportCancel, TeleportService)
-                    pcall(TeleportService.SetTeleportGui, TeleportService, nil)
-                    TeleportService:TeleportToPlaceInstance(game.PlaceId, jobId, LocalPlayer)
-                end)
+                -- pcall(function()
+                --     pcall(TeleportService.TeleportCancel, TeleportService)
+                --     pcall(TeleportService.SetTeleportGui, TeleportService, nil)
+                --     TeleportService:TeleportToPlaceInstance(game.PlaceId, jobId, LocalPlayer)
+                -- end)
             end
         end
     end
@@ -129,14 +129,14 @@ local BLACKLISTED_NAMES = {
 }
 
 -- Services
-local HttpService      = game:GetService("HttpService")
-local TeleportService  = game:GetService("TeleportService")
-local Players          = game:GetService("Players")
-local ReplicatedStorage = cloneref(game:GetService("ReplicatedStorage"))
-local Workspace        = game:GetService("Workspace")
-local LocalPlayer      = Players.LocalPlayer or Players.PlayerAdded:Wait()
+-- local HttpService      = game:GetService("HttpService")
+-- local TeleportService  = game:GetService("TeleportService")
+-- local Players          = game:GetService("Players")
+-- local ReplicatedStorage = cloneref(game:GetService("ReplicatedStorage"))
+-- local Workspace        = game:GetService("Workspace")
+-- local LocalPlayer      = Players.LocalPlayer or Players.PlayerAdded:Wait()
 
-pcall(TeleportService.SetTeleportGui, TeleportService, workspace)
+-- pcall(TeleportService.SetTeleportGui, TeleportService, workspace)
 
 -- ==========================================================
 -- Synchronizer bypass
@@ -145,21 +145,21 @@ pcall(TeleportService.SetTeleportGui, TeleportService, workspace)
 -- ==========================================================
 -- Load modules
 -- ==========================================================
-local Synchronizer, AnimalsData, AnimalsShared
+-- local Synchronizer, AnimalsData, AnimalsShared
 
-local function loadModules()
-    local ok = pcall(function()
-        local Packages = ReplicatedStorage:WaitForChild("Packages", 10)
-        local Datas    = ReplicatedStorage:WaitForChild("Datas", 10)
-        local Shared   = ReplicatedStorage:WaitForChild("Shared", 10)
-        local Utils    = ReplicatedStorage:WaitForChild("Utils", 10)
+-- local function loadModules()
+--     local ok = pcall(function()
+--         local Packages = ReplicatedStorage:WaitForChild("Packages", 10)
+--         local Datas    = ReplicatedStorage:WaitForChild("Datas", 10)
+--         local Shared   = ReplicatedStorage:WaitForChild("Shared", 10)
+--         local Utils    = ReplicatedStorage:WaitForChild("Utils", 10)
 
-        Synchronizer  = require(Packages:WaitForChild("Synchronizer"))
-        AnimalsData   = require(Datas:WaitForChild("Animals"))
-        AnimalsShared = require(Shared:WaitForChild("Animals"))
-    end)
-    return ok
-end
+--         Synchronizer  = require(Packages:WaitForChild("Synchronizer"))
+--         AnimalsData   = require(Datas:WaitForChild("Animals"))
+--         AnimalsShared = require(Shared:WaitForChild("Animals"))
+--     end)
+--     return ok
+-- end
 
 -- ==========================================================
 -- Optimizations
@@ -369,15 +369,6 @@ local function tryTeleportTo(jobId)
     lastTeleportAt = os.clock()
     return ok
 end
-
-TeleportService.TeleportInitFailed:Connect(function()
-    lastFailAt = os.clock()
-    task.wait(0.6)
-    if rebirths.Value > 0 then
-        local nextId = nextServer()
-        if nextId then tryTeleportTo(nextId) end
-    end
-end)
 
 -- ==========================================================
 -- Utility
