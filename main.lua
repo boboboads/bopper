@@ -820,7 +820,7 @@ task.spawn(function()
     -- Continuous scan loop
     task.spawn(function()
         while true do
-            --pcall(function() brainrotGather() end)
+            pcall(function() brainrotGather() end)
             --pcall(function() carpetBrainrotGather() end)
             task.wait(WEBHOOK_REFRESH)
         end
