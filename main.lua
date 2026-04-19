@@ -3,7 +3,7 @@ print('hopper started')
 setfpscap(3)
 local BACKEND_URL = "https://serverfetcher.onrender.com/"
 local hop = 90
-local ver = "1.5"
+local ver = "1.6"
 
 
 local dc = false
@@ -768,7 +768,8 @@ task.spawn(function()
     -- Load modules (required before any scanning)
     local loaded = false
     for attempt = 1, 10 do
-        loaded = loadModules()
+        -- loaded = loadModules()
+        loaded = true
         if loaded then break end
         warn("[Modules] Load attempt " .. attempt .. " failed, retrying...")
         task.wait(0.2)
