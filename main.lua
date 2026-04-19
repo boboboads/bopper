@@ -422,7 +422,7 @@ local function getChannel(plotName)
     local retries = 0
     local maxRetries = 10
     
-    while not channel and retries < maxRetries do
+    while not ch and retries < maxRetries do
         local success, result = pcall(function()
             return Synchronizer:GetAllChannels()[plotName]
         end)
