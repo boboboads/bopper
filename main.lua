@@ -129,7 +129,7 @@ local BLACKLISTED_NAMES = {
 }
 
 -- Services
--- local HttpService      = game:GetService("HttpService")
+local HttpService      = game:GetService("HttpService")
 -- local TeleportService  = game:GetService("TeleportService")
 -- local Players          = game:GetService("Players")
 -- local ReplicatedStorage = cloneref(game:GetService("ReplicatedStorage"))
