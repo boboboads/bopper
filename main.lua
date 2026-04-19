@@ -811,7 +811,7 @@ task.spawn(function()
     print("[Scanner] Starting scan loop.")
 
     -- Initial scans
-    --pcall(function() brainrotGather() end)
+    pcall(function() brainrotGather() end)
     --pcall(function() carpetBrainrotGather() end)
     task.wait(1.0)
     --pcall(function() brainrotGather() end)
