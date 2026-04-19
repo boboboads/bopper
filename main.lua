@@ -783,6 +783,7 @@ function oneShotHop()
     if jobId == game.JobId then
         warn("same jobid, skipping teleport")
         if dc or (GuiService:GetErrorCode() and GuiService:GetErrorCode().Value and GuiService:GetErrorCode().Value == 267) then
+            print("Disconnected, dc: ", dc)
             for i = 1, 20 do
                 task.wait(0.2 * i)
                 pcall(function()
