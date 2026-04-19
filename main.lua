@@ -27,7 +27,7 @@ local PRIORITY_ANIMALS = {
     "Antonio",
     "Pancake and Syrup",
     "Tirilikalika Tirilikalako",
-	"Globa Steppa",
+    "Globa Steppa",
     "Celestial Pegasus",
     "Rosey and Teddy",
     "Hydra Bunny",
@@ -64,7 +64,6 @@ local PRIORITY_ANIMALS = {
     "Tang Tang Keletang",
     "W or L",
 }
-
 
 local BEST_ANIMALS = {
     ["Strawberry Elephant"] = true,
@@ -126,7 +125,7 @@ end
 -- ==========================================================
 -- Load modules
 -- ==========================================================
-local Synchronizer, AnimalsData, AnimalsShared
+local Synchronizer, AnimalsData, AnimalsShared, NumberUtils
 
 local function loadModules()
     local ok = pcall(function()
@@ -138,6 +137,7 @@ local function loadModules()
         Synchronizer  = require(Packages:WaitForChild("Synchronizer"))
         AnimalsData   = require(Datas:WaitForChild("Animals"))
         AnimalsShared = require(Shared:WaitForChild("Animals"))
+        NumberUtils   = require(Utils:WaitForChild("NumberUtils"))
     end)
     return ok
 end
@@ -417,9 +417,26 @@ local channelCache = {}  -- plotName -> channel
 
 local function getChannel(plotName)
     if channelCache[plotName] then return channelCache[plotName] end
-    local ok, ch = pcall(function()
-        return Synchronizer:Wait(plotName)
-    end)
+
+    local ch
+    local retries = 0
+    local maxRetries = 10
+    
+    while not channel and retries < maxRetries do
+        local success, result = pcall(function()
+            return Synchronizer:GetAllChannels()[plotName]
+        end)
+        if success and result then
+            ch = result
+            break
+        else
+            retries = retries + 1
+            if retries < maxRetries then
+                task.wait(0.1)
+            end
+        end
+    end
+
     if ok and ch then
         channelCache[plotName] = ch
         return ch
@@ -811,17 +828,17 @@ task.spawn(function()
     print("[Scanner] Starting scan loop.")
 
     -- Initial scans
-    --pcall(function() brainrotGather() end)
-    --pcall(function() carpetBrainrotGather() end)
+    pcall(function() brainrotGather() end)
+    pcall(function() carpetBrainrotGather() end)
     task.wait(1.0)
---pcall(function() brainrotGather() end)
-   -- pcall(function() carpetBrainrotGather() end)
+    pcall(function() brainrotGather() end)
+    pcall(function() carpetBrainrotGather() end)
 
     -- Continuous scan loop
     task.spawn(function()
         while true do
-           -- pcall(function() brainrotGather() end)
-            --pcall(function() carpetBrainrotGather() end)
+            pcall(function() brainrotGather() end)
+            pcall(function() carpetBrainrotGather() end)
             task.wait(WEBHOOK_REFRESH)
         end
     end)
