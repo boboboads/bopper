@@ -809,13 +809,9 @@ task.spawn(function()
     task.wait(0.1) -- let channels settle
 
     print("[Scanner] Starting scan loop.")
-	task.wait(60)
 
     -- Initial scans
-	print("gather")
     pcall(function() brainrotGather() end)
-	task.wait(60)
-	print("Carpet")
     pcall(function() carpetBrainrotGather() end)
     task.wait(1.0)
     pcall(function() brainrotGather() end)
