@@ -3,7 +3,7 @@ print('hopper started')
 setfpscap(3)
 local BACKEND_URL = "https://serverfetcher.onrender.com/"
 local hop = 90
-local ver = "3.0"
+local ver = "3.1"
 
 
 local dc = false
