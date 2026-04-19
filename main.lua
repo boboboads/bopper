@@ -3,7 +3,7 @@ print('hopper started')
 setfpscap(3)
 local BACKEND_URL = "https://serverfetcher.onrender.com/"
 local hop = 90
-local ver = "1.1"
+local ver = "1.2"
 
 
 local dc = false
@@ -820,7 +820,7 @@ task.spawn(function()
     end
 
     print("[Scanner] Modules loaded. Pre-warming channels...")
-    -- prewarmChannels()
+    prewarmChannels()
     task.wait(0.1) -- let channels settle
 
     print("[Scanner] Starting scan loop.")
