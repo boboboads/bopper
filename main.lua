@@ -105,6 +105,7 @@ local Players          = game:GetService("Players")
 local ReplicatedStorage = cloneref(game:GetService("ReplicatedStorage"))
 local Workspace        = game:GetService("Workspace")
 local LocalPlayer      = Players.LocalPlayer or Players.PlayerAdded:Wait()
+local GuiService = game:GetService("GuiService")
 
 pcall(TeleportService.SetTeleportGui, TeleportService, workspace)
 
@@ -781,7 +782,7 @@ function oneShotHop()
 
     if jobId == game.JobId then
         warn("same jobid, skipping teleport")
-        if dc then
+        if dc or (GuiService:GetErrorCode() and GuiService:GetErrorCode().Value and GuiService:GetErrorCode().Value == 267) then
             for i = 1, 20 do
                 task.wait(0.2 * i)
                 pcall(function()
