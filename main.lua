@@ -3,7 +3,7 @@ print('hopper started')
 setfpscap(3)
 local BACKEND_URL = "https://serverfetcher.onrender.com/"
 local hop = 90
-local ver = "3.1"
+local ver = "3.1 skid"
 
 
 local dc = false
@@ -121,14 +121,39 @@ pcall(TeleportService.SetTeleportGui, TeleportService, workspace)
 -- Synchronizer bypass
 -- ==========================================================
 do
-    local oldInfo
-    oldInfo = hookfunction(debug.info, function(...)
-        local src = oldInfo(1, "s")
-        if src and src:find("Packages.Synchronizer") then
-            return nil
+    if not game:IsLoaded() then
+        game.Loaded:Wait()
+    end
+
+    local Sync = require(game.ReplicatedStorage:WaitForChild("Packages"):WaitForChild("Synchronizer"))
+    local patched = 0
+
+    for name, fn in pairs(Sync) do
+        if typeof(fn) ~= "function" then continue end
+        if isexecutorclosure(fn) then continue end
+
+        local ok, ups = pcall(debug.getupvalues, fn)
+        if not ok then continue end
+
+        for idx, val in pairs(ups) do
+            if typeof(val) == "function" and not isexecutorclosure(val) then
+                local ok2, innerUps = pcall(debug.getupvalues, val)
+                if ok2 then
+                    local hasBoolean = false
+                    for _, v in pairs(innerUps) do
+                        if typeof(v) == "boolean" then
+                            hasBoolean = true
+                            break
+                        end
+                    end
+                    if hasBoolean then
+                        debug.setupvalue(fn, idx, newcclosure(function() end))
+                        patched += 1
+                    end
+                end
+            end
         end
-        return oldInfo(...)
-    end)
+    end
 end
 
 -- ==========================================================
