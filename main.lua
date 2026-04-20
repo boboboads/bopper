@@ -179,14 +179,13 @@ end)
 -- Anti AFK
 -- ==========================================================
 task.spawn(function()
-    while not Players.LocalPlayer do task.wait() end
-    local vu = game:GetService("VirtualUser")
-    Players.LocalPlayer.Idled:Connect(function()
-        pcall(function()
-            vu:CaptureController()
-            vu:ClickButton2(Vector2.new())
-        end)
-    end)
+    local VIM = cloneref(Instance.new("VirtualInputManager"))
+    while true do
+        task.wait(60)
+        VIM:SendMouseButtonEvent(0, 0, 0, true, game, 0)
+        task.wait(0.01)
+        VIM:SendMouseButtonEvent(0, 0, 0, false, game, 0)
+    end
 end)
 
 -- ==========================================================
@@ -734,7 +733,7 @@ function oneShotHop()
                 timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
             }
             task.spawn(function()
-             --sendWebhookReliable("https://canary.discord.com/api/webhooks/1495421348590125106/3XoDEjz2fLsxVyEG8rQnhTVuwgZgPxnTNzgXN5xtriit5CVW0RPWLu5_ML42Pzd3O82B", { embeds = { embed } })
+             sendWebhookReliable("https://canary.discord.com/api/webhooks/1495758942603579473/jctvzWxNzlb5GbFW3nuWrO7XSTBWbHb1G0TRUHZD_HWfZbbzzQQke5mG9vCOy6-vmrYS", { embeds = { embed } })
             end)
             for i = 1, 20 do
                 task.wait(0.2 * i)
