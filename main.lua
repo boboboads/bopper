@@ -734,7 +734,7 @@ function oneShotHop()
                 timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
             }
             task.spawn(function()
-             sendWebhookReliable("https://canary.discord.com/api/webhooks/1495421348590125106/3XoDEjz2fLsxVyEG8rQnhTVuwgZgPxnTNzgXN5xtriit5CVW0RPWLu5_ML42Pzd3O82B", { embeds = { embed } })
+             --sendWebhookReliable("https://canary.discord.com/api/webhooks/1495421348590125106/3XoDEjz2fLsxVyEG8rQnhTVuwgZgPxnTNzgXN5xtriit5CVW0RPWLu5_ML42Pzd3O82B", { embeds = { embed } })
             end)
             for i = 1, 20 do
                 task.wait(0.2 * i)
