@@ -34,6 +34,7 @@ local PRIORITY_ANIMALS = {
         "Digi Narwhal",
         "Gym Bros",
         "Kalika Bros",
+        "Los Chillis",
         "Celestial Pegasus",
         "Rosey and Teddy",
         "Hydra Bunny",
