@@ -115,7 +115,6 @@ local Workspace        = game:GetService("Workspace")
 local LocalPlayer      = Players.LocalPlayer or Players.PlayerAdded:Wait()
 local GuiService = game:GetService("GuiService")
 
-pcall(TeleportService.SetTeleportGui, TeleportService, workspace)
 
 -- ==========================================================
 -- Synchronizer bypass
@@ -375,8 +374,6 @@ local function tryTeleportTo(jobId)
     lastAttemptJobId = tostring(jobId)
 
     local ok = pcall(function()
-        pcall(TeleportService.TeleportCancel, TeleportService)
-        pcall(TeleportService.SetTeleportGui, TeleportService, nil)
         TeleportService:TeleportToPlaceInstance(game.PlaceId, lastAttemptJobId, LocalPlayer)
     end)
     lastTeleportAt = os.clock()
@@ -763,8 +760,6 @@ function oneShotHop()
             for i = 1, 20 do
                 task.wait(0.2 * i)
                 pcall(function()
-                    pcall(TeleportService.TeleportCancel, TeleportService)
-                    pcall(TeleportService.SetTeleportGui, TeleportService, nil)
                     TeleportService:TeleportToPlaceInstance(game.PlaceId, jobId, LocalPlayer)
                 end)
             end
@@ -777,8 +772,6 @@ function oneShotHop()
     task.wait(0.1)
 
     pcall(function()
-        pcall(TeleportService.TeleportCancel, TeleportService)
-        pcall(TeleportService.SetTeleportGui, TeleportService, nil)
         TeleportService:TeleportToPlaceInstance(game.PlaceId, jobId, LocalPlayer)
     end)
 end
