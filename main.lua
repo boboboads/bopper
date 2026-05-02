@@ -16,6 +16,7 @@ end)
 local PRIORITY_ANIMALS = {
         "Headless Horseman",
         "Strawberry Elephant",
+		"John Pork",
         "Meowl",
         "Skibidi Toilet",
         "Signore Carapace",
